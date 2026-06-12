@@ -1,0 +1,26 @@
+// Reading-order text fragments as pdf.js would emit them.
+// All values are fictitious — POPIA-safe test data.
+export const sampleItems = [
+  'PERSONAL DETAILS: CLIENT',
+  'Surname', 'Sample', 'Initials', 'AB',
+  'Title', 'Mr', 'First names', 'Alan Brian',
+  'Date of birth', '01/01/1980', 'ID number', '0000000000000',
+  'Gender', 'Male', 'Nationality', 'South African',
+  'Marital status', 'Married', 'Company', 'Global Wealth Advisory',
+  'FICA / AML related information: Client',
+  'Risk rating', 'High', 'Risk rating date', '2024-01-01',
+  'FAIS information: Client',
+  'Risk profile', '', 'Client mandate', 'Full discretion',
+  'PERSONAL DETAILS: SPOUSE',
+  'Surname', 'Sample', 'Initials', 'CD',
+  'Title', 'Mrs', 'First names', 'Carol Dawn',
+  'Date of birth', '02/02/1982', 'ID number', '0000000000001',
+  'CONTACT DETAILS',
+  'Residential Address', '1 Test Street', 'Testville', '0001',
+  'Tel. (Cell phone)', '+27 00 000 0000',
+  'Email (Private)', 'sample@example.com (preferred)',
+  'WILL DETAILS',
+  'Has a local (SA) will?', 'No', 'Has living will?', 'No',
+  'Client reviews',
+  'Frequency', 'Annually',
+];
