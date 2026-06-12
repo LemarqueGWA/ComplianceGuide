@@ -1,0 +1,162 @@
+import { parseClientInfo, computeFields } from './crm-parser.js';
+import { classifyFields } from './field-resolver.js';
+import { listFields, fillTemplate } from './filler.js';
+import { buildChecklist, renderChecklistPdf } from './checklist.js';
+import { gwaFilename, buildBundle } from './bundler.js';
+import * as pdfjs from '../vendor/pdf.min.mjs';
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs', import.meta.url).href;
+
+const state = { values: {}, config: null, templateBytes: {} };
+
+async function loadConfigBrowser() {
+  const [templates, scenarios] = await Promise.all([
+    fetch('config/templates.json').then((r) => r.json()),
+    fetch('config/scenarios.investment.json').then((r) => r.json()),
+  ]);
+  return { templates, scenarios };
+}
+
+async function extractItems(arrayBuffer) {
+  const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+  const items = [];
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    for (const it of content.items) {
+      const s = (it.str || '').trim();
+      if (s) items.push(s);
+    }
+  }
+  return items;
+}
+
+async function init() {
+  state.config = await loadConfigBrowser();
+  const sel = document.getElementById('scenario');
+  for (const sc of state.config.scenarios.scenarios) {
+    const opt = document.createElement('option');
+    opt.value = sc.id; opt.textContent = sc.name; sel.appendChild(opt);
+  }
+  document.getElementById('crmFile').addEventListener('change', onUpload);
+  sel.addEventListener('change', renderScenario);
+  document.getElementById('generate').addEventListener('click', onGenerate);
+  // Render checklist immediately so advisers can see the scenario without uploading first
+  await renderScenario();
+}
+
+async function onUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const buf = await file.arrayBuffer();
+  try {
+    const items = await extractItems(buf.slice(0));
+    const parsed = parseClientInfo(items);
+    state.values = computeFields(parsed, { today: new Date(), adviser: '' });
+    document.getElementById('parseStatus').textContent =
+      `Parsed: ${state.values.client_display_name || '(name not found)'}`;
+    await renderScenario();
+  } catch (err) {
+    console.error(err);
+    document.getElementById('parseStatus').textContent =
+      'Could not read this PDF. Is it a Client Information Summary export?';
+  }
+}
+
+async function renderScenario() {
+  const sel = document.getElementById('scenario');
+  const sc = state.config.scenarios.scenarios.find((s) => s.id === sel.value);
+  if (!sc) return;
+
+  const rows = buildChecklist(sc, state.config.templates);
+  const cl = document.getElementById('checklist');
+  cl.innerHTML = '';
+  for (const r of rows) {
+    const div = document.createElement('div');
+    div.className = r.type === 'collect' ? 'collect' : (r.status === 'conditional' ? 'conditional' : '');
+    div.textContent = `• ${r.title} — ${r.action}${r.note ? ' (' + r.note + ')' : ''}`;
+    cl.appendChild(div);
+  }
+  document.getElementById('checklistPanel').hidden = false;
+
+  const forms = document.getElementById('forms');
+  forms.innerHTML = '';
+  const known = new Set(Object.keys(state.values));
+  for (const d of sc.documents) {
+    if (d.type !== 'generate') continue;
+    const tpl = state.config.templates[d.doc];
+    if (!tpl) continue; // collect-only doc key not in templates.json
+    if (!state.templateBytes[d.doc]) {
+      try {
+        state.templateBytes[d.doc] = new Uint8Array(
+          await fetch(tpl.file).then((r) => {
+            if (!r.ok) throw new Error(`HTTP ${r.status} fetching ${tpl.file}`);
+            return r.arrayBuffer();
+          })
+        );
+      } catch (err) {
+        console.warn('Could not load template:', tpl.file, err);
+        continue;
+      }
+    }
+    const fields = await listFields(state.templateBytes[d.doc]);
+    const { auto, manual } = classifyFields(fields, known);
+    const h = document.createElement('h3'); h.textContent = tpl.docType; forms.appendChild(h);
+    for (const f of [...auto, ...manual]) {
+      const row = document.createElement('div'); row.className = 'row';
+      const lab = document.createElement('label'); lab.textContent = f.label || f.name; row.appendChild(lab);
+      const inp = document.createElement('input');
+      inp.type = f.inputType || 'text';
+      inp.value = state.values[f.name] || '';
+      inp.dataset.field = f.name;
+      inp.addEventListener('input', () => { state.values[f.name] = inp.value; });
+      row.appendChild(inp); forms.appendChild(row);
+    }
+  }
+  document.getElementById('formsPanel').hidden = false;
+  document.getElementById('generate').disabled = false;
+}
+
+async function onGenerate() {
+  const btn = document.getElementById('generate');
+  btn.disabled = true;
+  btn.textContent = 'Generating…';
+  try {
+    const sel = document.getElementById('scenario');
+    const sc = state.config.scenarios.scenarios.find((s) => s.id === sel.value);
+    const ref = (state.values.client_display_name || 'UNREF').replace(/\s+/g, '');
+    const date = new Date();
+    const files = [];
+
+    for (const d of sc.documents) {
+      if (d.type !== 'generate') continue;
+      const tpl = state.config.templates[d.doc];
+      if (!tpl || !state.templateBytes[d.doc]) continue;
+      const filled = await fillTemplate(state.templateBytes[d.doc], state.values);
+      files.push({ name: gwaFilename(tpl.docType, ref, date), bytes: filled });
+    }
+    const rows = buildChecklist(sc, state.config.templates);
+    const checklist = await renderChecklistPdf(rows, {
+      scenarioName: sc.name,
+      clientName: state.values.client_full_name || '',
+      date: state.values.meta_date_generated || '',
+    });
+    files.push({ name: gwaFilename('Checklist', ref, date), bytes: checklist });
+
+    const zipBytes = await buildBundle(files);
+    download(zipBytes, `GWA_Bundle_${ref}_${date.getFullYear()}.zip`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate & download bundle';
+  }
+}
+
+function download(bytes, filename) {
+  const blob = new Blob([bytes], { type: 'application/zip' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+init();

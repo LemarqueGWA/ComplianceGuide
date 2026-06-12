@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+  <meta charset="utf-8">
+  <title>GWA Document Pre-population — DRAFT</title>
+  <link rel="stylesheet" href="css/brand.css">
+</head>
+<body>
+  <header>
+    <strong>Global Wealth Advisory</strong> — Document Pre-population
+    <div><small>DRAFT — advisers only · client data stays on this device</small></div>
+  </header>
+  <main>
+    <section class="panel">
+      <h2>1. Upload Client Information Summary</h2>
+      <input type="file" id="crmFile" accept="application/pdf">
+      <div id="parseStatus" class="draft"></div>
+    </section>
+    <section class="panel">
+      <h2>2. Scenario</h2>
+      <select id="scenario"></select>
+    </section>
+    <section class="panel" id="checklistPanel" hidden>
+      <h2>3. Compliance checklist</h2>
+      <div id="checklist" class="checklist"></div>
+    </section>
+    <section class="panel" id="formsPanel" hidden>
+      <h2>4. Form fields</h2>
+      <div id="forms"></div>
+    </section>
+    <button id="generate" disabled>Generate &amp; download bundle</button>
+  </main>
+
+  <script src="vendor/pdf-lib.min.js"></script>
+  <script src="vendor/jszip.min.js"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "pdf-lib": "./vendor/pdf-lib-shim.js",
+      "jszip": "./vendor/jszip-shim.js"
+    }
+  }
+  </script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
