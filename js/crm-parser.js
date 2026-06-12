@@ -1,7 +1,7 @@
 import { LABELS, SECTIONS } from './crm-labels.js';
 
 // Build a quick lookup: for a given section, is this string a known label?
-function labelToken(section, text) {
+function lookupToken(section, text) {
   const map = LABELS[section];
   return map ? map[text] : undefined;
 }
@@ -25,17 +25,20 @@ export function parseClientInfo(items) {
     if (SECTIONS[text]) { section = SECTIONS[text]; continue; }
     if (!section) continue;
 
-    const token = labelToken(section, text);
+    const token = lookupToken(section, text);
     if (!token) continue;
 
-    // value = next fragment, unless it is itself a label or section header
-    const next = (items[i + 1] || '').trim();
-    if (next === '' || SECTIONS[next] || isAnyLabel(next)) {
-      out[token] = '';
-    } else {
-      out[token] = next;
-      i++; // consume the value
+    // Accumulate consecutive value fragments until the next label / section /
+    // blank / end. Handles both single-value fields and multi-line values such
+    // as a residential address that the CRM emits as several fragments.
+    const parts = [];
+    while (i + 1 < items.length) {
+      const next = items[i + 1].trim();
+      if (next === '' || SECTIONS[next] || isAnyLabel(next)) break;
+      parts.push(next);
+      i++; // consume this value fragment
     }
+    out[token] = parts.join(', ');
   }
   return out;
 }

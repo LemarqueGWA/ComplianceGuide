@@ -39,3 +39,8 @@ test('blank value does not swallow the next label', () => {
   // Risk profile is blank in the fixture; mandate must still parse
   assert.equal(r.fais_mandate, 'Full discretion');
 });
+
+test('accumulates a multi-fragment residential address', () => {
+  const r = parseClientInfo(sampleItems);
+  assert.equal(r.contact_address, '1 Test Street, Testville, 0001');
+});
