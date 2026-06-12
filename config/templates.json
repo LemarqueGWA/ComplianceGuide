@@ -1,0 +1,22 @@
+{
+  "client_service_request": {
+    "file": "templates/GWA Client service request.pdf",
+    "docType": "ClientServiceRequest"
+  },
+  "gwa_mandate": {
+    "file": "templates/Global_Wealth_Advisory_Mandate_2026.pdf",
+    "docType": "Mandate"
+  },
+  "broker_appointment": {
+    "file": "templates/GWA Letter of Authority and Appointment.2025.pdf",
+    "docType": "BrokerAppointment"
+  },
+  "cdd_form": {
+    "file": "templates/CLIENT DUE DILIGENCE FORM GWA.pdf",
+    "docType": "CDD"
+  },
+  "cdd_form_existing": {
+    "file": "templates/Client Due Diligence (CDD) Existing client.pdf",
+    "docType": "CDDExisting"
+  }
+}
