@@ -1,23 +1,32 @@
 import { PDFDocument, rgb, StandardFonts, degrees } from 'pdf-lib';
 import { isEsignField } from './field-resolver.js';
 
-/** listFields(bytes) → [{ name, type }] where type is 'Tx' | 'Btn' | 'Sig' | ... */
+const TYPE_BY_CTOR = {
+  PDFTextField: 'Tx',
+  PDFCheckBox: 'Btn',
+  PDFRadioGroup: 'Btn',
+  PDFButton: 'Btn',
+  PDFSignature: 'Sig',
+  PDFDropdown: 'Ch',
+  PDFOptionList: 'Ch',
+};
+
+function normaliseType(ctorName) {
+  return TYPE_BY_CTOR[ctorName] || 'unknown';
+}
+
+/** listFields(bytes) → [{ name, type }] where type is 'Tx' | 'Btn' | 'Sig' | 'Ch' | 'unknown' */
 export async function listFields(bytes) {
   const doc = await PDFDocument.load(bytes);
   const form = doc.getForm();
   return form.getFields().map((f) => ({
     name: f.getName(),
-    type: f.constructor.name
-      .replace(/^PDF/, '')
-      .replace('TextField', 'Tx')
-      .replace('CheckBox', 'Btn')
-      .replace('RadioGroup', 'Btn')
-      .replace('Signature', 'Sig'),
+    type: normaliseType(f.constructor.name),
   }));
 }
 
 /**
- * fillTemplate(bytes, values): fills text/checkbox fields from `values`.
+ * fillTemplate(bytes, values): fills text/checkbox/choice fields from `values`.
  * - Skips e-sign / signature fields.
  * - Unknown keys and missing fields are ignored.
  * - Stamps a DRAFT watermark on every page (CLAUDE.md section 3.4).
@@ -30,7 +39,8 @@ export async function fillTemplate(bytes, values) {
   for (const field of form.getFields()) {
     const name = field.getName();
     const ctor = field.constructor.name;
-    if (isEsignField(name, ctor.includes('Signature') ? 'Sig' : 'Tx')) continue;
+    const type = normaliseType(ctor);
+    if (isEsignField(name, type)) continue;
     if (!(name in values)) continue;
     const value = values[name];
     if (value == null || value === '') continue;
@@ -39,8 +49,10 @@ export async function fillTemplate(bytes, values) {
       field.setText(String(value));
     } else if (ctor === 'PDFCheckBox') {
       if (value === 'Yes' || value === true) field.check();
+    } else if (ctor === 'PDFDropdown' || ctor === 'PDFOptionList') {
+      try { field.select(String(value)); } catch { /* value not a valid option — leave for manual entry */ }
     }
-    // RadioGroup / Dropdown intentionally left for a later phase
+    // RadioGroup intentionally left for a later phase
   }
 
   await stampDraft(doc);
