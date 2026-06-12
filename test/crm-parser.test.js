@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { LABELS, SECTIONS } from '../js/crm-labels.js';
 import { parseClientInfo } from '../js/crm-parser.js';
+import { computeFields, formatDate } from '../js/crm-parser.js';
 import { sampleItems } from './fixtures/sample-items.js';
 
 test('label map resolves client + spouse personal fields', () => {
@@ -43,4 +44,21 @@ test('blank value does not swallow the next label', () => {
 test('accumulates a multi-fragment residential address', () => {
   const r = parseClientInfo(sampleItems);
   assert.equal(r.contact_address, '1 Test Street, Testville, 0001');
+});
+
+test('formatDate converts dd/mm/yyyy to GWA long form', () => {
+  assert.equal(formatDate('01/01/1980'), '01 January 1980');
+});
+
+test('computeFields adds full name, display name, age', () => {
+  const base = parseClientInfo(sampleItems);
+  const r = computeFields(base, { today: new Date('2026-06-12'), adviser: 'Lemarque Sadler' });
+  assert.equal(r.client_full_name, 'Alan Brian Sample');       // first names + surname
+  assert.equal(r.client_display_name, 'AB Sample');            // initials + surname
+  assert.equal(r.client_age, '46');
+  assert.equal(r.meta_practice_name, 'Global Wealth Advisory (Pty) Ltd');
+  assert.equal(r.meta_fsp_number, '49263');
+  assert.equal(r.meta_adviser_name, 'Lemarque Sadler');
+  assert.equal(r.adviser_name, 'Lemarque Sadler');             // alias for template field
+  assert.equal(r.client_dob, '01 January 1980');               // normalised in place
 });
