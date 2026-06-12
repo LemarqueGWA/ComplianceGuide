@@ -70,8 +70,10 @@ async function onUpload(e) {
   const buf = await file.arrayBuffer();
   try {
     const items = await extractItems(buf);
+    const ai = items.indexOf('Advisor:');
+    const adviser = ai >= 0 ? (items[ai + 1] || '') : '';
     const parsed = parseClientInfo(items);
-    state.values = computeFields(parsed, { today: new Date(), adviser: '' });
+    state.values = computeFields(parsed, { today: new Date(), adviser });
     document.getElementById('parseStatus').textContent =
       `Parsed: ${state.values.client_display_name || '(name not found)'}`;
     renderScenario();
