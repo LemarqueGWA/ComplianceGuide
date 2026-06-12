@@ -7,7 +7,7 @@ import * as pdfjs from '../vendor/pdf.min.mjs';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs', import.meta.url).href;
 
-const state = { values: {}, config: null, templateBytes: {} };
+const state = { values: {}, config: null, templateBytes: {}, conditional: {} };
 let renderToken = 0;
 
 async function loadConfigBrowser() {
@@ -75,24 +75,52 @@ async function renderScenario() {
   const sc = state.config.scenarios.scenarios.find((s) => s.id === sel.value);
   if (!sc) return;
 
-  const myToken = ++renderToken;
+  ++renderToken;
 
   const rows = buildChecklist(sc, state.config.templates);
   const cl = document.getElementById('checklist');
   cl.innerHTML = '';
   for (const r of rows) {
-    const div = document.createElement('div');
-    div.className = r.type === 'collect' ? 'collect' : (r.status === 'conditional' ? 'conditional' : '');
-    div.textContent = `• ${r.title} — ${r.action}${r.note ? ' (' + r.note + ')' : ''}`;
-    cl.appendChild(div);
+    if (r.type === 'generate' && r.status === 'conditional') {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'conditional';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = state.conditional[r.doc] || false;
+      cb.addEventListener('change', () => {
+        state.conditional[r.doc] = cb.checked;
+        renderForms();
+      });
+      wrapper.appendChild(cb);
+      const span = document.createElement('span');
+      span.textContent = ` • ${r.title} — ${r.action}${r.note ? ' (' + r.note + ')' : ''}`;
+      wrapper.appendChild(span);
+      cl.appendChild(wrapper);
+    } else {
+      const div = document.createElement('div');
+      div.className = r.type === 'collect' ? 'collect' : '';
+      div.textContent = `• ${r.title} — ${r.action}${r.note ? ' (' + r.note + ')' : ''}`;
+      cl.appendChild(div);
+    }
   }
   document.getElementById('checklistPanel').hidden = false;
+
+  await renderForms();
+}
+
+async function renderForms() {
+  const sel = document.getElementById('scenario');
+  const sc = state.config.scenarios.scenarios.find((s) => s.id === sel.value);
+  if (!sc) return;
+
+  const myToken = renderToken;
 
   const forms = document.getElementById('forms');
   forms.innerHTML = '';
   const known = new Set(Object.keys(state.values));
   for (const d of sc.documents) {
     if (d.type !== 'generate') continue;
+    if (d.status === 'conditional' && !state.conditional[d.doc]) continue;
     const tpl = state.config.templates[d.doc];
     if (!tpl) continue; // collect-only doc key not in templates.json
     if (!state.templateBytes[d.doc]) {
@@ -120,7 +148,10 @@ async function renderScenario() {
       inp.type = f.inputType || 'text';
       inp.value = state.values[f.name] || '';
       inp.dataset.field = f.name;
-      inp.addEventListener('input', () => { state.values[f.name] = inp.value; });
+      inp.addEventListener('input', () => {
+        state.values[f.name] = inp.value;
+        document.getElementById('generate').disabled = Object.keys(state.values).length === 0;
+      });
       row.appendChild(inp); forms.appendChild(row);
     }
   }
@@ -140,8 +171,11 @@ async function onGenerate() {
     const files = [];
     const skipped = [];
 
+    state.values.meta_scenario = sc.name;
+
     for (const d of sc.documents) {
       if (d.type !== 'generate') continue;
+      if (d.status === 'conditional' && !state.conditional[d.doc]) continue;
       const tpl = state.config.templates[d.doc];
       if (!tpl || !state.templateBytes[d.doc]) {
         skipped.push(d.doc);

@@ -32,3 +32,8 @@ test('manual fields get input type + pretty label', () => {
   assert.equal(r.manual[0].label, 'Screening Date');
   assert.equal(prettyLabel('product_provider'), 'Product Provider');
 });
+
+test('bare Date signing field is skipped', () => {
+  assert.equal(isEsignField('Date', 'Tx'), true);
+  assert.equal(isEsignField('screening_date', 'Tx'), false); // a real manual date field is NOT skipped
+});

@@ -2,6 +2,7 @@ export function isEsignField(name, type) {
   if (type === 'Sig') return true;
   if (name.includes('_es_:')) return true;
   if (/^(Signature|Signed at|Signature Block|Client signature)/i.test(name)) return true;
+  if (/^date$/i.test(name)) return true;
   return false;
 }
 

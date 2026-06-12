@@ -39,14 +39,16 @@ export async function renderChecklistPdf(rows, meta) {
   line('Compliance Checklist', bold, 18, PRIMARY);
   line(`Scenario: ${meta.scenarioName}`, font, 11, STEEL);
   line(`Client: ${meta.clientName}    Date: ${meta.date}`, font, 10, STEEL);
-  y -= 8;
+  y -= 4;
+  line('DRAFT — REQUIRES COMPLIANCE REVIEW BEFORE USE', bold, 9, STEEL);
+  y -= 4;
   for (const r of rows) {
     const status = r.status === 'conditional' ? '[ conditional ]' : '[ required ]';
     line(`${status}  ${r.title} — ${r.action}`, font, 10, rgb(0.03,0.04,0.16));
     if (r.note) line(`        Note: ${r.note}`, font, 8, STEEL);
   }
   y -= 10;
-  line('DRAFT — REQUIRES COMPLIANCE REVIEW BEFORE USE', bold, 9, STEEL);
   line('Global Wealth Advisory (Pty) Ltd | FSP 49263', font, 8, STEEL);
+  line('Reviewed by: ____________________    Date: ______________', font, 8, STEEL);
   return doc.save();
 }

@@ -70,5 +70,8 @@ async function stampDraft(doc) {
       x: width / 2 - 120, y: height / 2, size: 60, font,
       color: rgb(0.47, 0.52, 0.58), opacity: 0.08, rotate: degrees(45),
     });
+    page.drawText('Reviewed by: ____________________    Date: ______________', {
+      x: 36, y: 28, size: 8, font, color: rgb(0.47, 0.52, 0.58),
+    });
   }
 }

@@ -96,5 +96,7 @@ export function computeFields(parsed, opts = {}) {
   r.meta_date_generated = formatDate(
     `${String(today.getDate()).padStart(2,'0')}/${String(today.getMonth()+1).padStart(2,'0')}/${today.getFullYear()}`
   );
+  r.meta_doc_version = '1.0';
+  r.meta_scenario = opts.scenario || '';
   return r;
 }

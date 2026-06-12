@@ -60,6 +60,8 @@ test('computeFields adds full name, display name, age', () => {
   assert.equal(r.meta_adviser_name, 'Lemarque Sadler');
   assert.equal(r.adviser_name, 'Lemarque Sadler');             // alias for template field
   assert.equal(r.client_dob, '01 January 1980');               // normalised in place
+  assert.equal(r.meta_doc_version, '1.0');
+  assert.equal(r.meta_scenario, '');
 });
 
 test('formatDate passes ISO and empty through unchanged', () => {
