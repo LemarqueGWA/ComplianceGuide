@@ -28,11 +28,12 @@ const STEEL   = rgb(120/255, 134/255, 147/255);
 /** renderChecklistPdf(rows, meta) → Uint8Array. meta = {scenarioName, clientName, date}. */
 export async function renderChecklistPdf(rows, meta) {
   const doc = await PDFDocument.create();
-  const page = doc.addPage([595, 842]); // A4
+  let page = doc.addPage([595, 842]); // A4
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   let y = 800;
   const line = (t, f = font, size = 10, color = rgb(0,0,0)) => {
+    if (y < 40) { page = doc.addPage([595, 842]); y = 800; }
     page.drawText(t, { x: 40, y, size, font: f, color }); y -= size + 6;
   };
   line('Compliance Checklist', bold, 18, PRIMARY);

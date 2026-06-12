@@ -8,6 +8,7 @@ import * as pdfjs from '../vendor/pdf.min.mjs';
 pdfjs.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs', import.meta.url).href;
 
 const state = { values: {}, config: null, templateBytes: {} };
+let renderToken = 0;
 
 async function loadConfigBrowser() {
   const [templates, scenarios] = await Promise.all([
@@ -32,17 +33,23 @@ async function extractItems(arrayBuffer) {
 }
 
 async function init() {
-  state.config = await loadConfigBrowser();
-  const sel = document.getElementById('scenario');
-  for (const sc of state.config.scenarios.scenarios) {
-    const opt = document.createElement('option');
-    opt.value = sc.id; opt.textContent = sc.name; sel.appendChild(opt);
+  try {
+    state.config = await loadConfigBrowser();
+    const sel = document.getElementById('scenario');
+    for (const sc of state.config.scenarios.scenarios) {
+      const opt = document.createElement('option');
+      opt.value = sc.id; opt.textContent = sc.name; sel.appendChild(opt);
+    }
+    document.getElementById('crmFile').addEventListener('change', onUpload);
+    sel.addEventListener('change', renderScenario);
+    document.getElementById('generate').addEventListener('click', onGenerate);
+    // Render checklist immediately so advisers can see the scenario without uploading first
+    await renderScenario();
+  } catch (err) {
+    document.getElementById('parseStatus').textContent =
+      'Could not load dashboard config. Ensure you are running it via a local web server (not opening the file directly).';
+    console.error(err);
   }
-  document.getElementById('crmFile').addEventListener('change', onUpload);
-  sel.addEventListener('change', renderScenario);
-  document.getElementById('generate').addEventListener('click', onGenerate);
-  // Render checklist immediately so advisers can see the scenario without uploading first
-  await renderScenario();
 }
 
 async function onUpload(e) {
@@ -50,7 +57,7 @@ async function onUpload(e) {
   if (!file) return;
   const buf = await file.arrayBuffer();
   try {
-    const items = await extractItems(buf.slice(0));
+    const items = await extractItems(buf);
     const parsed = parseClientInfo(items);
     state.values = computeFields(parsed, { today: new Date(), adviser: '' });
     document.getElementById('parseStatus').textContent =
@@ -67,6 +74,8 @@ async function renderScenario() {
   const sel = document.getElementById('scenario');
   const sc = state.config.scenarios.scenarios.find((s) => s.id === sel.value);
   if (!sc) return;
+
+  const myToken = ++renderToken;
 
   const rows = buildChecklist(sc, state.config.templates);
   const cl = document.getElementById('checklist');
@@ -99,7 +108,9 @@ async function renderScenario() {
         continue;
       }
     }
+    if (myToken !== renderToken) return;
     const fields = await listFields(state.templateBytes[d.doc]);
+    if (myToken !== renderToken) return;
     const { auto, manual } = classifyFields(fields, known);
     const h = document.createElement('h3'); h.textContent = tpl.docType; forms.appendChild(h);
     for (const f of [...auto, ...manual]) {
@@ -114,7 +125,7 @@ async function renderScenario() {
     }
   }
   document.getElementById('formsPanel').hidden = false;
-  document.getElementById('generate').disabled = false;
+  document.getElementById('generate').disabled = Object.keys(state.values).length === 0;
 }
 
 async function onGenerate() {
@@ -127,11 +138,15 @@ async function onGenerate() {
     const ref = (state.values.client_display_name || 'UNREF').replace(/\s+/g, '');
     const date = new Date();
     const files = [];
+    const skipped = [];
 
     for (const d of sc.documents) {
       if (d.type !== 'generate') continue;
       const tpl = state.config.templates[d.doc];
-      if (!tpl || !state.templateBytes[d.doc]) continue;
+      if (!tpl || !state.templateBytes[d.doc]) {
+        skipped.push(d.doc);
+        continue;
+      }
       const filled = await fillTemplate(state.templateBytes[d.doc], state.values);
       files.push({ name: gwaFilename(tpl.docType, ref, date), bytes: filled });
     }
@@ -145,8 +160,17 @@ async function onGenerate() {
 
     const zipBytes = await buildBundle(files);
     download(zipBytes, `GWA_Bundle_${ref}_${date.getFullYear()}.zip`);
+
+    if (skipped.length) {
+      document.getElementById('parseStatus').textContent =
+        `Bundle downloaded (incomplete) — templates not loaded for: ${skipped.join(', ')}`;
+    }
+  } catch (err) {
+    console.error(err);
+    document.getElementById('parseStatus').textContent =
+      'Generation failed — see console. Nothing was downloaded.';
   } finally {
-    btn.disabled = false;
+    btn.disabled = Object.keys(state.values).length === 0;
     btn.textContent = 'Generate & download bundle';
   }
 }
@@ -159,4 +183,4 @@ function download(bytes, filename) {
   URL.revokeObjectURL(url);
 }
 
-init();
+init().catch((e) => console.error(e));
