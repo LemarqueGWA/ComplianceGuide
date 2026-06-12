@@ -52,7 +52,7 @@
       "name": "Annual portfolio review",
       "documents": [
         { "doc": "cdd_form_existing", "status": "conditional", "type": "generate", "note": "Only if client details changed" },
-        { "doc": "easefica_risk_rating", "status": "conditional", "type": "collect", "note": "Only if existing PEP screening is older than 12 months" }
+        { "doc": "pep_screening", "status": "conditional", "type": "collect", "note": "Only if existing PEP screening is older than 12 months" }
       ]
     }
   ]
