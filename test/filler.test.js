@@ -15,6 +15,28 @@ test('listFields returns named fields with types', async () => {
   assert.ok(names.includes('client_id_number'));
 });
 
+test('listFields tags checkbox fields as checkbox (not the catch-all Btn)', async () => {
+  const bytes = await readFile(MANDATE);
+  const fields = await listFields(bytes);
+  const f = fields.find(x => x.name === 'risk_profile_balanced');
+  assert.ok(f, 'risk_profile_balanced field should exist in the mandate template');
+  assert.equal(f.type, 'checkbox');
+});
+
+test('fillTemplate checks a checkbox when the value is "Yes"', async () => {
+  const bytes = await readFile(MANDATE);
+  const filled = await fillTemplate(bytes, { risk_profile_balanced: 'Yes' });
+  const form = (await PDFDocument.load(filled)).getForm();
+  assert.equal(form.getCheckBox('risk_profile_balanced').isChecked(), true);
+});
+
+test('fillTemplate leaves a checkbox unchecked when value is blank', async () => {
+  const bytes = await readFile(MANDATE);
+  const filled = await fillTemplate(bytes, { risk_profile_balanced: '' });
+  const form = (await PDFDocument.load(filled)).getForm();
+  assert.equal(form.getCheckBox('risk_profile_balanced').isChecked(), false);
+});
+
 test('fillTemplate writes text fields and leaves a valid PDF', async () => {
   const bytes = await readFile(MANDATE);
   const filled = await fillTemplate(bytes, {

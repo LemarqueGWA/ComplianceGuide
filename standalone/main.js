@@ -145,13 +145,26 @@ async function renderForms() {
       const row = document.createElement('div'); row.className = 'row';
       const lab = document.createElement('label'); lab.textContent = f.label || f.name; row.appendChild(lab);
       const inp = document.createElement('input');
-      inp.type = f.inputType || 'text';
-      inp.value = state.values[f.name] || '';
       inp.dataset.field = f.name;
-      inp.addEventListener('input', () => {
-        state.values[f.name] = inp.value;
-        document.getElementById('generate').disabled = Object.keys(state.values).length === 0;
-      });
+      if (f.inputType === 'checkbox') {
+        // Tick-box field: store 'Yes' when ticked (filler checks the PDF box on
+        // 'Yes'/true), blank when not — blank is skipped, so the box stays clear.
+        inp.type = 'checkbox';
+        const v = state.values[f.name];
+        inp.checked = v === 'Yes' || v === true;
+        row.classList.add('check');
+        inp.addEventListener('change', () => {
+          state.values[f.name] = inp.checked ? 'Yes' : '';
+          document.getElementById('generate').disabled = Object.keys(state.values).length === 0;
+        });
+      } else {
+        inp.type = f.inputType || 'text';
+        inp.value = state.values[f.name] || '';
+        inp.addEventListener('input', () => {
+          state.values[f.name] = inp.value;
+          document.getElementById('generate').disabled = Object.keys(state.values).length === 0;
+        });
+      }
       row.appendChild(inp); forms.appendChild(row);
     }
   }

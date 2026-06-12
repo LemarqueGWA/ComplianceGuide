@@ -33,6 +33,12 @@ test('manual fields get input type + pretty label', () => {
   assert.equal(prettyLabel('product_provider'), 'Product Provider');
 });
 
+test('checkbox fields get a checkbox input type', () => {
+  const r = classifyFields([{ name: 'risk_profile_balanced', type: 'checkbox' }], known);
+  assert.equal(r.manual[0].inputType, 'checkbox');
+  assert.equal(r.manual[0].label, 'Risk Profile Balanced');
+});
+
 test('bare Date signing field is skipped', () => {
   assert.equal(isEsignField('Date', 'Tx'), true);
   assert.equal(isEsignField('screening_date', 'Tx'), false); // a real manual date field is NOT skipped

@@ -12,7 +12,8 @@ export function prettyLabel(name) {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function inputTypeFor(name) {
+function inputTypeFor(name, type) {
+  if (type === 'checkbox') return 'checkbox';
   if (name.endsWith('_date')) return 'date';
   if (name.endsWith('_amount')) return 'number';
   return 'text';
@@ -29,7 +30,7 @@ export function classifyFields(fields, knownTokens) {
   for (const f of fields) {
     if (isEsignField(f.name, f.type)) { skip.push(f); continue; }
     if (knownTokens.has(f.name)) { auto.push(f); continue; }
-    manual.push({ ...f, inputType: inputTypeFor(f.name), label: prettyLabel(f.name) });
+    manual.push({ ...f, inputType: inputTypeFor(f.name, f.type), label: prettyLabel(f.name) });
   }
   return { auto, manual, skip };
 }

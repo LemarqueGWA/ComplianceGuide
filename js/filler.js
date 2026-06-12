@@ -10,13 +10,18 @@ import { isEsignField } from './field-resolver.js';
 // field unfilled. `instanceof` against the imported classes survives minification.
 function normaliseType(field) {
   if (field instanceof PDFTextField) return 'Tx';
-  if (field instanceof PDFCheckBox || field instanceof PDFRadioGroup) return 'Btn';
+  if (field instanceof PDFCheckBox) return 'checkbox';
+  if (field instanceof PDFRadioGroup) return 'radio';
   if (field instanceof PDFSignature) return 'Sig';
   if (field instanceof PDFDropdown || field instanceof PDFOptionList) return 'Ch';
   return 'unknown';
 }
 
-/** listFields(bytes) → [{ name, type }] where type is 'Tx' | 'Btn' | 'Sig' | 'Ch' | 'unknown' */
+/** listFields(bytes) → [{ name, type }] where type is
+ *  'Tx' | 'checkbox' | 'radio' | 'Sig' | 'Ch' | 'unknown'.
+ *  Checkbox and radio buttons are reported separately so the UI can render a
+ *  real tick-box; fillTemplate still branches on `instanceof`, so the split is
+ *  cosmetic to the fill logic. */
 export async function listFields(bytes) {
   const doc = await PDFDocument.load(bytes);
   const form = doc.getForm();
