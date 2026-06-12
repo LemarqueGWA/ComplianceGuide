@@ -1,18 +1,19 @@
-import { PDFDocument, rgb, StandardFonts, degrees, PDFName, PDFBool, PDFString } from 'pdf-lib';
+import {
+  PDFDocument, rgb, StandardFonts, degrees, PDFName, PDFBool, PDFString,
+  PDFTextField, PDFCheckBox, PDFRadioGroup, PDFSignature, PDFDropdown, PDFOptionList,
+} from 'pdf-lib';
 import { isEsignField } from './field-resolver.js';
 
-const TYPE_BY_CTOR = {
-  PDFTextField: 'Tx',
-  PDFCheckBox: 'Btn',
-  PDFRadioGroup: 'Btn',
-  PDFButton: 'Btn',
-  PDFSignature: 'Sig',
-  PDFDropdown: 'Ch',
-  PDFOptionList: 'Ch',
-};
-
-function normaliseType(ctorName) {
-  return TYPE_BY_CTOR[ctorName] || 'unknown';
+// IMPORTANT: detect field kind with `instanceof`, NOT `field.constructor.name`.
+// The standalone build is minified, which renames classes — so constructor.name
+// is mangled (e.g. 'e') and string comparisons silently never match, leaving every
+// field unfilled. `instanceof` against the imported classes survives minification.
+function normaliseType(field) {
+  if (field instanceof PDFTextField) return 'Tx';
+  if (field instanceof PDFCheckBox || field instanceof PDFRadioGroup) return 'Btn';
+  if (field instanceof PDFSignature) return 'Sig';
+  if (field instanceof PDFDropdown || field instanceof PDFOptionList) return 'Ch';
+  return 'unknown';
 }
 
 /** listFields(bytes) → [{ name, type }] where type is 'Tx' | 'Btn' | 'Sig' | 'Ch' | 'unknown' */
@@ -21,7 +22,7 @@ export async function listFields(bytes) {
   const form = doc.getForm();
   return form.getFields().map((f) => ({
     name: f.getName(),
-    type: normaliseType(f.constructor.name),
+    type: normaliseType(f),
   }));
 }
 
@@ -49,20 +50,19 @@ export async function fillTemplate(bytes, values) {
 
   for (const field of form.getFields()) {
     const name = field.getName();
-    const ctor = field.constructor.name;
-    const type = normaliseType(ctor);
+    const type = normaliseType(field);
     if (isEsignField(name, type)) continue;
     if (!(name in values)) continue;
     const value = values[name];
     if (value == null || value === '') continue;
 
-    if (ctor === 'PDFTextField') {
+    if (field instanceof PDFTextField) {
       field.acroField.dict.set(PDFName.of('DA'), PDFString.of('/Helv 10 Tf 0 g'));
       field.setText(String(value));
       try { field.setFontSize(10); } catch { /* combed/odd fields: keep DA size */ }
-    } else if (ctor === 'PDFCheckBox') {
+    } else if (field instanceof PDFCheckBox) {
       if (value === 'Yes' || value === true) field.check();
-    } else if (ctor === 'PDFDropdown' || ctor === 'PDFOptionList') {
+    } else if (field instanceof PDFDropdown || field instanceof PDFOptionList) {
       try { field.select(String(value)); } catch { /* value not a valid option — leave for manual entry */ }
     }
     // RadioGroup intentionally left for a later phase
