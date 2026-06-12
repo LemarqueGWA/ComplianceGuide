@@ -1,3 +1,5 @@
 node_modules/
 *.zip
 .DS_Store
+# Build artifact — regenerate with: node build-standalone.mjs
+GWA_Dashboard.html

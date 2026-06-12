@@ -2,8 +2,19 @@
 
 DRAFT tool. Advisers only. All client data stays in the browser — nothing is uploaded to a server.
 
-## Run
-Serve over http (ES modules + fetch require it — do not open index.html via file://):
+## For advisers: the single-file version (no Terminal)
+**`GWA_Dashboard.html`** is a self-contained, offline, double-click file — libraries, the 5
+templates, and the scenario config are all baked in. Send advisers that one file; they
+double-click it and it opens in their browser. No install, no Terminal, no server.
+
+Rebuild it after any change to the app, templates, or config:
+
+    node build-standalone.mjs      # writes GWA_Dashboard.html (~14 MB)
+
+(The .html is a build artifact and is git-ignored — regenerate, don't edit it by hand.)
+
+## For developers: the server version
+Serve over http (the modular source uses ES modules + fetch — do not open index.html via file://):
 
     python3 -m http.server 8765
 
