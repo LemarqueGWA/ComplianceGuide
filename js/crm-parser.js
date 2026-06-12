@@ -51,7 +51,9 @@ export function formatDate(v) {
   const m = v.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
   if (!m) return v; // leave ISO or unknown formats untouched
   const [, d, mo, y] = m;
-  return `${d} ${MONTHS[parseInt(mo, 10) - 1]} ${y}`;
+  const name = MONTHS[parseInt(mo, 10) - 1];
+  if (!name) return v; // invalid month — leave untouched
+  return `${d} ${name} ${y}`;
 }
 
 function ageFromDob(dobRaw, today) {
@@ -80,7 +82,7 @@ export function computeFields(parsed, opts = {}) {
     if (k.endsWith('_dob') || k.endsWith('_date')) r[k] = formatDate(r[k]);
   }
 
-  const ageSrc = parsed.client_dob; // raw dd/mm/yyyy before normalisation
+  const ageSrc = parsed.client_dob; // MUST read from parsed (pre-normalisation), not r
   r.client_full_name = [parsed.client_first_names, parsed.client_surname]
     .filter(Boolean).join(' ');
   r.client_display_name = [parsed.client_initials, parsed.client_surname]

@@ -1,8 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { LABELS, SECTIONS } from '../js/crm-labels.js';
-import { parseClientInfo } from '../js/crm-parser.js';
-import { computeFields, formatDate } from '../js/crm-parser.js';
+import { parseClientInfo, computeFields, formatDate } from '../js/crm-parser.js';
 import { sampleItems } from './fixtures/sample-items.js';
 
 test('label map resolves client + spouse personal fields', () => {
@@ -61,4 +60,27 @@ test('computeFields adds full name, display name, age', () => {
   assert.equal(r.meta_adviser_name, 'Lemarque Sadler');
   assert.equal(r.adviser_name, 'Lemarque Sadler');             // alias for template field
   assert.equal(r.client_dob, '01 January 1980');               // normalised in place
+});
+
+test('formatDate passes ISO and empty through unchanged', () => {
+  assert.equal(formatDate('2024-01-01'), '2024-01-01');
+  assert.equal(formatDate(''), '');
+  assert.equal(formatDate('01/13/2026'), '01/13/2026'); // invalid month untouched
+});
+
+test('age is correct on the birthday itself', () => {
+  const base = { client_dob: '15/06/1980' };
+  const r = computeFields(base, { today: new Date('2026-06-15') });
+  assert.equal(r.client_age, '46');
+});
+
+test('computeFields does not mutate its input', () => {
+  const base = parseClientInfo(sampleItems);
+  computeFields(base, { today: new Date('2026-06-12') });
+  assert.equal(base.client_dob, '01/01/1980'); // still raw
+});
+
+test('meta_date_generated is today in GWA long form', () => {
+  const r = computeFields({}, { today: new Date('2026-06-12') });
+  assert.equal(r.meta_date_generated, '12 June 2026');
 });
