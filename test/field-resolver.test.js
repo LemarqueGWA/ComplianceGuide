@@ -1,6 +1,29 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { classifyFields, isEsignField, prettyLabel } from '../js/field-resolver.js';
+import { classifyFields, isEsignField, prettyLabel, gateRevealedValues } from '../js/field-resolver.js';
+
+const REVEALS = { select_inheritance: 'inheritance', select_other: 'other_source_of_fund_details' };
+
+test('gateRevealedValues drops a paired text field when its checkbox is not ticked', () => {
+  const v = { client_full_name: 'Y', inheritance: 'R 50 000', select_inheritance: '' };
+  const r = gateRevealedValues(v, REVEALS);
+  assert.equal('inheritance' in r, false);   // hidden value not written to PDF
+  assert.equal(r.client_full_name, 'Y');      // unrelated field untouched
+});
+
+test('gateRevealedValues keeps a paired text field when its checkbox is ticked', () => {
+  const v = { inheritance: 'R 50 000', select_inheritance: 'Yes' };
+  const r = gateRevealedValues(v, REVEALS);
+  assert.equal(r.inheritance, 'R 50 000');
+});
+
+test('gateRevealedValues does not mutate input and tolerates no reveals', () => {
+  const v = { inheritance: 'x', select_inheritance: '' };
+  const r = gateRevealedValues(v, undefined);
+  assert.equal(r.inheritance, 'x');           // no reveals map → unchanged copy
+  assert.equal(v.inheritance, 'x');           // original untouched
+  assert.notEqual(r, v);                       // returns a new object
+});
 
 const known = new Set(['client_full_name', 'client_id_number', 'contact_email']);
 

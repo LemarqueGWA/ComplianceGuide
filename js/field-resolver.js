@@ -6,6 +6,22 @@ export function isEsignField(name, type) {
   return false;
 }
 
+/**
+ * gateRevealedValues(values, reveals): returns a NEW values object with
+ * conditionally-revealed text fields removed when their controlling checkbox is
+ * not ticked. `reveals` maps checkboxField -> textField (template config). A
+ * blank/untruthy checkbox means its paired text field must NOT be written to the
+ * output PDF, even if a value lingers in state from an earlier tick.
+ */
+export function gateRevealedValues(values, reveals = {}) {
+  const out = { ...values };
+  for (const [checkbox, textField] of Object.entries(reveals || {})) {
+    const ticked = values[checkbox] === 'Yes' || values[checkbox] === true;
+    if (!ticked) delete out[textField];
+  }
+  return out;
+}
+
 export function prettyLabel(name) {
   return name
     .replace(/_/g, ' ')

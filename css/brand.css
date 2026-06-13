@@ -12,6 +12,9 @@ h2{color:var(--gwa-primary);border-bottom:2px solid var(--gwa-light);padding-bot
 .row label{flex:0 0 240px;color:var(--gwa-steel);font-size:13px;}
 .row input{flex:1;padding:6px;border:1px solid var(--gwa-ice);border-radius:4px;}
 .row.check input[type=checkbox]{flex:0 0 auto;width:18px;height:18px;padding:0;margin-right:auto;accent-color:var(--gwa-primary);cursor:pointer;}
+.row.revealed{margin-left:24px;border-left:2px solid var(--gwa-ice);padding-left:10px;}
+.row.revealed label{flex-basis:216px;}
+.row[hidden]{display:none;}
 .checklist .conditional{color:var(--gwa-steel);}
 .checklist .collect{font-style:italic;color:var(--gwa-steel);}
 button{background:var(--gwa-primary);color:#fff;border:0;padding:10px 18px;border-radius:4px;cursor:pointer;}
