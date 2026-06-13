@@ -1,5 +1,5 @@
 import {
-  PDFDocument, rgb, StandardFonts, degrees, PDFName, PDFBool, PDFString,
+  PDFDocument, StandardFonts, PDFName, PDFBool, PDFString,
   PDFTextField, PDFCheckBox, PDFRadioGroup, PDFSignature, PDFDropdown, PDFOptionList,
 } from 'pdf-lib';
 import { isEsignField } from './field-resolver.js';
@@ -35,7 +35,9 @@ export async function listFields(bytes) {
  * fillTemplate(bytes, values): fills text/checkbox/choice fields from `values`.
  * - Skips e-sign / signature fields.
  * - Unknown keys and missing fields are ignored.
- * - Stamps a DRAFT watermark on every page (CLAUDE.md section 3.4).
+ * - No DRAFT watermark or adviser sign-off stamp is added: removed by adviser
+ *   instruction so filled templates print clean. (The internal compliance
+ *   checklist still carries its own DRAFT/sign-off line.)
  * Returns Uint8Array of the filled PDF.
  */
 export async function fillTemplate(bytes, values) {
@@ -78,7 +80,6 @@ export async function fillTemplate(bytes, values) {
   form.updateFieldAppearances(helv);
   form.acroForm.dict.set(PDFName.of('NeedAppearances'), PDFBool.True);
 
-  await stampDraft(doc);
   // We have already generated appearances above; don't let save() redo it.
   return doc.save({ updateFieldAppearances: false });
 }
@@ -92,21 +93,4 @@ function registerFontInDR(doc, form, font) {
   let fonts = dr.lookup(PDFName.of('Font'));
   if (!fonts) { fonts = doc.context.obj({}); dr.set(PDFName.of('Font'), fonts); }
   fonts.set(PDFName.of('Helv'), font.ref);
-}
-
-async function stampDraft(doc) {
-  const font = await doc.embedFont(StandardFonts.HelveticaBold);
-  for (const page of doc.getPages()) {
-    const { width, height } = page.getSize();
-    page.drawText('DRAFT — REQUIRES COMPLIANCE REVIEW', {
-      x: 36, y: height - 24, size: 8, font, color: rgb(0.47, 0.52, 0.58),
-    });
-    page.drawText('DRAFT', {
-      x: width / 2 - 120, y: height / 2, size: 60, font,
-      color: rgb(0.47, 0.52, 0.58), opacity: 0.08, rotate: degrees(45),
-    });
-    page.drawText('Reviewed by: ____________________    Date: ______________', {
-      x: 36, y: 28, size: 8, font, color: rgb(0.47, 0.52, 0.58),
-    });
-  }
 }

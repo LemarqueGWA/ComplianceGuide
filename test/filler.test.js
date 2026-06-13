@@ -56,6 +56,19 @@ test('fillTemplate ignores unknown keys without throwing', async () => {
   );
 });
 
+test('filled templates carry no DRAFT watermark or sign-off stamp', async () => {
+  const bytes = await readFile(MANDATE);
+  const filled = await fillTemplate(bytes, { client_full_name: 'Alan Brian Sample' });
+  const doc = await PDFDocument.load(filled);
+  // No extra drawn text was added to any page (stamp was the only drawText source).
+  // Assert the saved bytes contain none of the stamp strings.
+  const text = Buffer.from(filled).toString('latin1');
+  assert.equal(text.includes('DRAFT'), false);
+  assert.equal(text.includes('Reviewed by'), false);
+  // Field value still filled (sanity).
+  assert.equal(doc.getForm().getTextField('client_full_name').getText(), 'Alan Brian Sample');
+});
+
 test('fillTemplate does not write to e-sign fields', async () => {
   const bytes = await readFile(CDD);
   const filled = await fillTemplate(bytes, {
