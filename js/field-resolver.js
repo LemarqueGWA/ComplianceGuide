@@ -22,6 +22,13 @@ export function gateRevealedValues(values, reveals = {}) {
   return out;
 }
 
+// snake_case = starts with a lowercase letter, then lowercase / digits joined
+// by single underscores. Generic Adobe field names ('Check Box14', 'Text1',
+// 'Row1', bare numbers) fail this and are hidden from the dashboard.
+export function isSnakeName(name) {
+  return /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/.test(name);
+}
+
 export function prettyLabel(name) {
   return name
     .replace(/_/g, ' ')
@@ -45,6 +52,9 @@ export function classifyFields(fields, knownTokens) {
   const auto = [], manual = [], skip = [];
   for (const f of fields) {
     if (isEsignField(f.name, f.type)) { skip.push(f); continue; }
+    // Hide fields whose names don't follow snake_case (generic Adobe auto-names
+    // carry no meaning and can't be auto-filled): keep the form clean.
+    if (!isSnakeName(f.name)) { skip.push(f); continue; }
     if (knownTokens.has(f.name)) { auto.push(f); continue; }
     manual.push({ ...f, inputType: inputTypeFor(f.name, f.type), label: prettyLabel(f.name) });
   }

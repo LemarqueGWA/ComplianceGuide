@@ -172,11 +172,13 @@ async function renderForms() {
     const h = document.createElement('h3'); h.textContent = tpl.docType; forms.appendChild(h);
     const reveals = tpl.reveals || {};
     const controlled = new Set(Object.values(reveals)); // text fields gated by a checkbox
+    const autoNames = new Set(auto.map((f) => f.name));  // filled from the CRM summary
     const all = [...auto, ...manual];
     const byName = new Map(all.map((f) => [f.name, f]));
     for (const f of all) {
       if (controlled.has(f.name)) continue; // rendered by its controlling checkbox instead
       const { row, inp } = buildFieldRow(f);
+      if (autoNames.has(f.name)) row.classList.add('auto');
       forms.appendChild(row);
       // A checkbox that controls a detail field: render that field directly
       // after it, hidden until the box is ticked. Value is kept on un-tick (it

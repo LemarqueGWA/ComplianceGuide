@@ -1,6 +1,30 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { classifyFields, isEsignField, prettyLabel, gateRevealedValues } from '../js/field-resolver.js';
+import { classifyFields, isEsignField, prettyLabel, gateRevealedValues, isSnakeName } from '../js/field-resolver.js';
+
+test('isSnakeName accepts snake_case only', () => {
+  assert.equal(isSnakeName('client_full_name'), true);
+  assert.equal(isSnakeName('pep_client_yes'), true);
+  assert.equal(isSnakeName('investment_goal_other_detail'), true);
+  assert.equal(isSnakeName('Check Box14'), false);
+  assert.equal(isSnakeName('Text1'), false);
+  assert.equal(isSnakeName('Checkbox - None'), false);
+  assert.equal(isSnakeName('12'), false);
+});
+
+test('non-snake (generic Adobe) fields are hidden via skip', () => {
+  const fields = [
+    { name: 'client_full_name', type: 'Tx' },
+    { name: 'Check Box14', type: 'checkbox' },
+    { name: 'Text1', type: 'Tx' },
+    { name: '12', type: 'checkbox' },
+    { name: 'investment_goal_other', type: 'checkbox' },
+  ];
+  const r = classifyFields(fields, new Set(['client_full_name']));
+  assert.deepEqual(r.auto.map(f => f.name), ['client_full_name']);
+  assert.deepEqual(r.manual.map(f => f.name).sort(), ['investment_goal_other']);
+  assert.deepEqual(r.skip.map(f => f.name).sort(), ['12', 'Check Box14', 'Text1']);
+});
 
 const REVEALS = { select_inheritance: 'inheritance', select_other: 'other_source_of_fund_details' };
 
