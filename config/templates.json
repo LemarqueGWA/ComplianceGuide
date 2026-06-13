@@ -31,5 +31,24 @@
   "cdd_form_existing": {
     "file": "templates/Client Due Diligence (CDD) Existing client.pdf",
     "docType": "CDDExisting"
+  },
+  "suitability_questionnaire": {
+    "file": "templates/Personal Investor Suitability Questionnaire.pdf",
+    "docType": "SuitabilityQuestionnaire",
+    "reveals": {
+      "investment_goal_other": "investment_goal_other_detail"
+    }
+  },
+  "profile_confirmation": {
+    "file": "templates/Personal Investor Profile Confirmation.pdf",
+    "docType": "ProfileConfirmation"
+  },
+  "portfolio_allocation": {
+    "file": "templates/Investment Portfolio Allocation Summary.pdf",
+    "docType": "PortfolioAllocation"
+  },
+  "advice_agreement": {
+    "file": "templates/Advice Agreement for Investments.pdf",
+    "docType": "AdviceAgreement"
   }
 }
