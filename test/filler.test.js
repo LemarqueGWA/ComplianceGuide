@@ -15,6 +15,28 @@ test('listFields returns named fields with types', async () => {
   assert.ok(names.includes('client_id_number'));
 });
 
+test('listFields tags checkbox fields as checkbox (not the catch-all Btn)', async () => {
+  const bytes = await readFile(MANDATE);
+  const fields = await listFields(bytes);
+  const f = fields.find(x => x.name === 'risk_profile_balanced');
+  assert.ok(f, 'risk_profile_balanced field should exist in the mandate template');
+  assert.equal(f.type, 'checkbox');
+});
+
+test('fillTemplate checks a checkbox when the value is "Yes"', async () => {
+  const bytes = await readFile(MANDATE);
+  const filled = await fillTemplate(bytes, { risk_profile_balanced: 'Yes' });
+  const form = (await PDFDocument.load(filled)).getForm();
+  assert.equal(form.getCheckBox('risk_profile_balanced').isChecked(), true);
+});
+
+test('fillTemplate leaves a checkbox unchecked when value is blank', async () => {
+  const bytes = await readFile(MANDATE);
+  const filled = await fillTemplate(bytes, { risk_profile_balanced: '' });
+  const form = (await PDFDocument.load(filled)).getForm();
+  assert.equal(form.getCheckBox('risk_profile_balanced').isChecked(), false);
+});
+
 test('fillTemplate writes text fields and leaves a valid PDF', async () => {
   const bytes = await readFile(MANDATE);
   const filled = await fillTemplate(bytes, {
@@ -32,6 +54,19 @@ test('fillTemplate ignores unknown keys without throwing', async () => {
   await assert.doesNotReject(
     fillTemplate(bytes, { nonexistent_field: 'x', client_full_name: 'Y' })
   );
+});
+
+test('filled templates carry no DRAFT watermark or sign-off stamp', async () => {
+  const bytes = await readFile(MANDATE);
+  const filled = await fillTemplate(bytes, { client_full_name: 'Alan Brian Sample' });
+  const doc = await PDFDocument.load(filled);
+  // No extra drawn text was added to any page (stamp was the only drawText source).
+  // Assert the saved bytes contain none of the stamp strings.
+  const text = Buffer.from(filled).toString('latin1');
+  assert.equal(text.includes('DRAFT'), false);
+  assert.equal(text.includes('Reviewed by'), false);
+  // Field value still filled (sanity).
+  assert.equal(doc.getForm().getTextField('client_full_name').getText(), 'Alan Brian Sample');
 });
 
 test('fillTemplate does not write to e-sign fields', async () => {

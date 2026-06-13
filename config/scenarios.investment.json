@@ -9,6 +9,10 @@
         { "doc": "gwa_mandate", "status": "required", "type": "generate" },
         { "doc": "client_service_request", "status": "required", "type": "generate" },
         { "doc": "cdd_form", "status": "required", "type": "generate" },
+        { "doc": "suitability_questionnaire", "status": "required", "type": "generate" },
+        { "doc": "profile_confirmation", "status": "required", "type": "generate" },
+        { "doc": "portfolio_allocation", "status": "required", "type": "generate" },
+        { "doc": "advice_agreement", "status": "required", "type": "generate" },
         { "doc": "fica_id_proof", "status": "required", "type": "collect" },
         { "doc": "easefica_risk_rating", "status": "required", "type": "collect" },
         { "doc": "pep_screening", "status": "required", "type": "collect" }
@@ -34,6 +38,10 @@
         { "doc": "client_service_request", "status": "required", "type": "generate" },
         { "doc": "cdd_form_existing", "status": "required", "type": "generate" },
         { "doc": "gwa_mandate", "status": "conditional", "type": "generate", "note": "Only if no existing signed mandate on file" },
+        { "doc": "suitability_questionnaire", "status": "required", "type": "generate" },
+        { "doc": "profile_confirmation", "status": "required", "type": "generate" },
+        { "doc": "portfolio_allocation", "status": "required", "type": "generate" },
+        { "doc": "advice_agreement", "status": "required", "type": "generate" },
         { "doc": "easefica_risk_rating", "status": "required", "type": "collect" }
       ]
     },
@@ -44,6 +52,10 @@
         { "doc": "broker_appointment", "status": "required", "type": "generate" },
         { "doc": "cdd_form_existing", "status": "required", "type": "generate" },
         { "doc": "gwa_mandate", "status": "conditional", "type": "generate", "note": "Only if no existing signed mandate on file" },
+        { "doc": "suitability_questionnaire", "status": "required", "type": "generate" },
+        { "doc": "profile_confirmation", "status": "required", "type": "generate" },
+        { "doc": "portfolio_allocation", "status": "required", "type": "generate" },
+        { "doc": "advice_agreement", "status": "required", "type": "generate" },
         { "doc": "easefica_risk_rating", "status": "required", "type": "collect" }
       ]
     },
@@ -52,6 +64,10 @@
       "name": "Annual portfolio review",
       "documents": [
         { "doc": "cdd_form_existing", "status": "conditional", "type": "generate", "note": "Only if client details changed" },
+        { "doc": "suitability_questionnaire", "status": "required", "type": "generate" },
+        { "doc": "profile_confirmation", "status": "required", "type": "generate" },
+        { "doc": "portfolio_allocation", "status": "required", "type": "generate" },
+        { "doc": "advice_agreement", "status": "required", "type": "generate" },
         { "doc": "pep_screening", "status": "conditional", "type": "collect", "note": "Only if existing PEP screening is older than 12 months" }
       ]
     }

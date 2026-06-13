@@ -46,30 +46,43 @@ ${css}
 </style>
 </head>
 <body>
-<header>
-  <strong>Global Wealth Advisory</strong> — Document Pre-population
-  <div><small>DRAFT — advisers only · client data stays on this device · works offline</small></div>
+<header class="app-header">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-name"><b>GLOBAL WEALTH</b><span class="brand-sub">ADVISORY</span></span>
+  </div>
+  <div class="header-meta">
+    <span class="tag">Document Pre-population</span>
+    <small>Advisers only · client data stays on this device · works offline</small>
+  </div>
 </header>
 <main>
-  <section class="panel">
-    <h2>1. Upload Client Information Summary</h2>
-    <input type="file" id="crmFile" accept="application/pdf">
-    <div id="parseStatus" class="draft"></div>
+  <section class="panel" data-step="1">
+    <h2>Upload Client Information Summary</h2>
+    <label class="filedrop" for="crmFile">
+      <span class="filedrop-icon">↑</span>
+      <span>Choose the CRM Client Information Summary PDF</span>
+      <input type="file" id="crmFile" accept="application/pdf">
+    </label>
+    <div id="parseStatus"></div>
   </section>
-  <section class="panel">
-    <h2>2. Scenario</h2>
+  <section class="panel" data-step="2">
+    <h2>Scenario</h2>
     <select id="scenario"></select>
   </section>
-  <section class="panel" id="checklistPanel" hidden>
-    <h2>3. Compliance checklist</h2>
+  <section class="panel" id="checklistPanel" data-step="3" hidden>
+    <h2>Compliance checklist</h2>
     <div id="checklist" class="checklist"></div>
   </section>
-  <section class="panel" id="formsPanel" hidden>
-    <h2>4. Form fields</h2>
+  <section class="panel" id="formsPanel" data-step="4" hidden>
+    <h2>Form fields</h2>
+    <p class="hint">Fields tagged <span class="chip chip-crm">CRM</span> were filled from the uploaded summary. Tick a box to reveal its detail field.</p>
     <div id="forms"></div>
   </section>
-  <button id="generate" disabled>Generate &amp; download bundle</button>
-  <p class="draft">All outputs are DRAFTS requiring compliance review. Not for adviser use until AI Committee ratification (CLAUDE.md §10).</p>
+  <div class="actionbar">
+    <button id="generate" disabled>Generate &amp; download bundle</button>
+    <p class="status">All outputs are drafts for compliance review.</p>
+  </div>
 </main>
 <script>
 window.GWA_CONFIG = ${JSON.stringify(config)};

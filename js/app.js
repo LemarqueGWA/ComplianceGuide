@@ -1,5 +1,5 @@
 import { parseClientInfo, computeFields } from './crm-parser.js';
-import { classifyFields } from './field-resolver.js';
+import { classifyFields, gateRevealedValues } from './field-resolver.js';
 import { listFields, fillTemplate } from './filler.js';
 import { buildChecklist, renderChecklistPdf } from './checklist.js';
 import { gwaFilename, buildBundle } from './bundler.js';
@@ -110,6 +110,35 @@ async function renderScenario() {
   await renderForms();
 }
 
+// Build one labelled input row for a classified field. Checkboxes store 'Yes'
+// when ticked / '' when not; text inputs store their raw value. Returns the row
+// element and the input so callers can wire reveal behaviour.
+function buildFieldRow(f) {
+  const row = document.createElement('div'); row.className = 'row';
+  const lab = document.createElement('label'); lab.textContent = f.label || f.name; row.appendChild(lab);
+  const inp = document.createElement('input');
+  inp.dataset.field = f.name;
+  if (f.inputType === 'checkbox') {
+    inp.type = 'checkbox';
+    const v = state.values[f.name];
+    inp.checked = v === 'Yes' || v === true;
+    row.classList.add('check');
+    inp.addEventListener('change', () => {
+      state.values[f.name] = inp.checked ? 'Yes' : '';
+      document.getElementById('generate').disabled = Object.keys(state.values).length === 0;
+    });
+  } else {
+    inp.type = f.inputType || 'text';
+    inp.value = state.values[f.name] || '';
+    inp.addEventListener('input', () => {
+      state.values[f.name] = inp.value;
+      document.getElementById('generate').disabled = Object.keys(state.values).length === 0;
+    });
+  }
+  row.appendChild(inp);
+  return { row, inp };
+}
+
 async function renderForms() {
   const sel = document.getElementById('scenario');
   const sc = state.config.scenarios.scenarios.find((s) => s.id === sel.value);
@@ -143,18 +172,27 @@ async function renderForms() {
     if (myToken !== renderToken) return;
     const { auto, manual } = classifyFields(fields, known);
     const h = document.createElement('h3'); h.textContent = tpl.docType; forms.appendChild(h);
-    for (const f of [...auto, ...manual]) {
-      const row = document.createElement('div'); row.className = 'row';
-      const lab = document.createElement('label'); lab.textContent = f.label || f.name; row.appendChild(lab);
-      const inp = document.createElement('input');
-      inp.type = f.inputType || 'text';
-      inp.value = state.values[f.name] || '';
-      inp.dataset.field = f.name;
-      inp.addEventListener('input', () => {
-        state.values[f.name] = inp.value;
-        document.getElementById('generate').disabled = Object.keys(state.values).length === 0;
-      });
-      row.appendChild(inp); forms.appendChild(row);
+    const reveals = tpl.reveals || {};
+    const controlled = new Set(Object.values(reveals)); // text fields gated by a checkbox
+    const autoNames = new Set(auto.map((f) => f.name));  // filled from the CRM summary
+    const all = [...auto, ...manual];
+    const byName = new Map(all.map((f) => [f.name, f]));
+    for (const f of all) {
+      if (controlled.has(f.name)) continue; // rendered by its controlling checkbox instead
+      const { row, inp } = buildFieldRow(f);
+      if (autoNames.has(f.name)) row.classList.add('auto');
+      forms.appendChild(row);
+      // A checkbox that controls a detail field: render that field directly
+      // after it, hidden until the box is ticked. Value is kept on un-tick (it
+      // simply hides) but gateRevealedValues stops it reaching the output PDF.
+      const pairedName = reveals[f.name];
+      if (pairedName && byName.has(pairedName)) {
+        const { row: prow } = buildFieldRow(byName.get(pairedName));
+        prow.classList.add('revealed');
+        prow.hidden = !inp.checked;
+        forms.appendChild(prow);
+        inp.addEventListener('change', () => { prow.hidden = !inp.checked; });
+      }
     }
   }
   document.getElementById('formsPanel').hidden = false;
@@ -183,7 +221,8 @@ async function onGenerate() {
         skipped.push(d.doc);
         continue;
       }
-      const filled = await fillTemplate(state.templateBytes[d.doc], state.values);
+      const vals = gateRevealedValues(state.values, tpl.reveals);
+      const filled = await fillTemplate(state.templateBytes[d.doc], vals);
       files.push({ name: gwaFilename(tpl.docType, ref, date), bytes: filled });
     }
     const rows = buildChecklist(sc, state.config.templates);

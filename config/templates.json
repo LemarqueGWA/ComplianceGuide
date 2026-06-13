@@ -13,10 +13,42 @@
   },
   "cdd_form": {
     "file": "templates/CLIENT DUE DILIGENCE FORM GWA.pdf",
-    "docType": "CDD"
+    "docType": "CDD",
+    "reveals": {
+      "select_infome_from_salary": "income_from_salary",
+      "select_comnpany_profits": "company_profits",
+      "select_savings_investments": "savings_investment_proceeds",
+      "select_gift_donation": "gift_donation",
+      "select_retirement_income": "retirement_income",
+      "select_sale_rental_income": "sale_rental_income",
+      "select_sale_of_company": "sale_of_company",
+      "select_divorce_settlement": "divorce_settlement",
+      "select_inheritance": "inheritance",
+      "select_other": "other_source_of_fund_details",
+      "select_other_purpose_of_business": "other_specify_details"
+    }
   },
   "cdd_form_existing": {
     "file": "templates/Client Due Diligence (CDD) Existing client.pdf",
     "docType": "CDDExisting"
+  },
+  "suitability_questionnaire": {
+    "file": "templates/Personal Investor Suitability Questionnaire.pdf",
+    "docType": "SuitabilityQuestionnaire",
+    "reveals": {
+      "investment_goal_other": "investment_goal_other_detail"
+    }
+  },
+  "profile_confirmation": {
+    "file": "templates/Personal Investor Profile Confirmation.pdf",
+    "docType": "ProfileConfirmation"
+  },
+  "portfolio_allocation": {
+    "file": "templates/Investment Portfolio Allocation Summary.pdf",
+    "docType": "PortfolioAllocation"
+  },
+  "advice_agreement": {
+    "file": "templates/Advice Agreement for Investments.pdf",
+    "docType": "AdviceAgreement"
   }
 }
