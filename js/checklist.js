@@ -1,4 +1,5 @@
 import { prettyLabel } from './field-resolver.js';
+import { DOC_LABELS } from './doc-labels.js';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 
 /**
@@ -7,7 +8,7 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
  */
 export function buildChecklist(scenario, templates) {
   return scenario.documents.map((d) => {
-    const title = prettyLabel(d.doc);
+    const title = DOC_LABELS[d.doc] || prettyLabel(d.doc);
     let action;
     if (d.type === 'collect') action = 'Obtain & attach';
     else action = d.status === 'conditional' ? 'Auto-generated (conditional)' : 'Auto-generated';
