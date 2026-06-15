@@ -42,5 +42,6 @@ async function extractItems(arrayBuffer) {
 initDashboard({
   loadConfig: async () => window.GWA_CONFIG,
   getTemplateBytes: async (id) => templateBytes[id] || null,
+  listFields: async (id) => (window.GWA_TEMPLATE_FIELDS || {})[id] || null,
   extractItems,
 });

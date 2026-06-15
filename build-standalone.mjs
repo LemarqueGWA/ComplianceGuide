@@ -3,6 +3,8 @@
 // config, the 5 blank templates (base64), and the pdf.js worker (base64).
 import * as esbuild from 'esbuild';
 import { readFileSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { listFields } from './js/filler.js';
 
 const root = new URL('./', import.meta.url);
 const read = (p) => readFileSync(new URL(p, root));
@@ -10,6 +12,10 @@ const readText = (p) => read(p).toString('utf8');
 const b64 = (p) => read(p).toString('base64');
 
 // 1. Bundle the standalone entry to a single IIFE.
+// pdf-lib + jszip are aliased to their UMD shims (and the UMD libs are inlined as
+// globals below) — esbuild's minifier mangles pdf-lib in a way that hangs on some
+// AcroForms (e.g. the CDD form), whereas the official UMD build is fine. pdf.js
+// stays bundled.
 const result = await esbuild.build({
   entryPoints: ['standalone/main.js'],
   bundle: true,
@@ -17,9 +23,15 @@ const result = await esbuild.build({
   platform: 'browser',
   target: 'es2020',
   minify: true,
+  alias: {
+    'pdf-lib': fileURLToPath(new URL('vendor/pdf-lib-shim.js', root)),
+    'jszip': fileURLToPath(new URL('vendor/jszip-shim.js', root)),
+  },
   write: false,
 });
 const bundleJs = result.outputFiles[0].text;
+const pdfLibUmd = readText('vendor/pdf-lib.min.js');
+const jszipUmd = readText('vendor/jszip.min.js');
 
 // 2. Gather embedded data.
 const templatesCfg = JSON.parse(readText('config/templates.json'));
@@ -30,6 +42,16 @@ const templatesB64 = {};
 for (const [id, t] of Object.entries(templatesCfg)) {
   templatesB64[id] = b64(t.file);
 }
+
+// Pre-extract each template's AcroForm field list now (node pdf-lib is fast).
+// Embedded + written to config so neither build of the app has to parse AcroForms
+// in the browser just to render the form (browser pdf-lib is pathologically slow
+// on some of these PDFs). Fill still happens in-browser at generate time.
+const templateFields = {};
+for (const [id, t] of Object.entries(templatesCfg)) {
+  templateFields[id] = await listFields(new Uint8Array(read(t.file)));
+}
+writeFileSync(new URL('config/template-fields.json', root), JSON.stringify(templateFields, null, 2));
 
 const workerB64 = b64('node_modules/pdfjs-dist/build/pdf.worker.min.mjs');
 const css = readText('css/brand.css');
@@ -125,8 +147,11 @@ ${css}
     </div>
   </div>
 </div>
+<script>${pdfLibUmd}</script>
+<script>${jszipUmd}</script>
 <script>
 window.GWA_CONFIG = ${JSON.stringify(config)};
+window.GWA_TEMPLATE_FIELDS = ${JSON.stringify(templateFields)};
 window.GWA_TEMPLATES_B64 = ${JSON.stringify(templatesB64)};
 window.GWA_PDF_WORKER_B64 = ${JSON.stringify(workerB64)};
 </script>

@@ -8,7 +8,7 @@
   --gwa-steel:#788693; --gwa-slate:#4F6D7A; --gwa-ice:#D6E3EB; --gwa-white:#FFFFFF;
   --page:#eef3f8; --line:#c4d6e3;
   --ok:#1f7a4d; --warn:#b46a00; --bad:#b3261e;
-  --radius:10px; --maxw:880px;
+  --radius:10px; --maxw:1040px;
   /* Brand fonts (Gotham≈Montserrat, Utopia≈Source Serif). Embed as base64 @font-face
      at build for the offline file; system fallbacks until then. */
   --head:"Montserrat","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
@@ -154,3 +154,17 @@ footer.draft{max-width:var(--maxw); margin:0 auto; padding:6px 2px 0; font-size:
   #printChecklist{display:block !important;}
   body{background:#fff;}
 }
+
+/* ---------- Multi-column checkbox groups + nested reveal ---------- */
+.grid{display:grid; gap:4px 22px;}
+.grid.c2{grid-template-columns:repeat(2,1fr);}
+.grid.c3{grid-template-columns:repeat(3,1fr);}
+.checkcell{display:flex; align-items:center; gap:10px; padding:6px 2px;}
+.checkcell label{flex:1; font-size:12.5px; color:var(--gwa-navy); font-family:var(--head); font-weight:500;}
+.checkcell input[type=checkbox]{flex:none; width:18px; height:18px; accent-color:var(--gwa-primary); cursor:pointer;}
+.checkcell.master{padding:4px 2px 10px; border-bottom:1px solid var(--gwa-ice); margin-bottom:10px;}
+.checkcell.master label{font-weight:700; color:var(--gwa-primary); flex:1;}
+.nested{padding-left:2px;}
+.ei-type{display:flex; flex-direction:column;}
+.ei-type .row.revealed{margin:4px 0 8px 22px;}
+@media(max-width:760px){ .grid.c2,.grid.c3{grid-template-columns:1fr;} }

@@ -19,14 +19,20 @@ async function extractItems(arrayBuffer) {
   return items;
 }
 
+let TEMPLATE_FIELDS = {};
+
 initDashboard({
   loadConfig: async () => {
-    const [templates, scenarios] = await Promise.all([
+    const [templates, scenarios, fields] = await Promise.all([
       fetch('config/templates.json').then((r) => r.json()),
       fetch('config/scenarios.investment.json').then((r) => r.json()),
+      // pre-extracted at build time; optional in dev (falls back to in-browser parse)
+      fetch('config/template-fields.json').then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
     ]);
+    TEMPLATE_FIELDS = fields || {};
     return { templates, scenarios };
   },
+  listFields: async (id) => TEMPLATE_FIELDS[id] || null,
   getTemplateBytes: async (_id, tpl) => {
     try {
       const r = await fetch(tpl.file);
