@@ -64,20 +64,34 @@ const CHECK_GRID_GROUPS = [
     'portfolio_objective_draw_income', 'portfolio_objective_preserve_capital',
     'portfolio_objective_grow_capital', 'portfolio_objective_combination',
   ] },
+  { title: 'Products Considered', cols: 3, members: [
+    'products_considered_investment_portfolio', 'products_considered_tfsa',
+    'products_considered_local_and_global_share_portfolio', 'products_considered_ccm',
+    'products_considered_structured_products', 'products_considered_endowment_sinking_funds',
+    'products_considered_ra', 'products_considered_pension_fund', 'products_considered_provident_fund',
+    'products_considered_preservation_fund', 'products_considered_living_annuity', 'products_considered_life_annuity',
+  ] },
 ];
-// Existing-investment allocation text fields, gated behind a master "has portfolio?"
-// toggle and a per-type checkbox (both UI-only).
-const EXISTING_INVEST = { title: 'Existing Investments', types: [
-  ['existing_investment_income', 'Income'],
-  ['existing_investment_stable', 'Stable'],
-  ['existing_investment_balanced', 'Balanced'],
-  ['existing_investment_growth', 'Growth'],
-  ['existing_investment_fully_offshore', 'Fully Offshore'],
-] };
+// Investment allocation text fields, each gated behind a master "has portfolio?"
+// toggle and a per-type checkbox (both UI-only). uiFlag/prefix key the UI state.
+const INVEST_GROUPS = [
+  { title: 'Existing Investments', uiFlag: 'hasExisting', prefix: 'ei',
+    master: 'Client has an existing investment portfolio?', types: [
+      ['existing_investment_income', 'Income'], ['existing_investment_stable', 'Stable'],
+      ['existing_investment_balanced', 'Balanced'], ['existing_investment_growth', 'Growth'],
+      ['existing_investment_fully_offshore', 'Fully Offshore'],
+    ] },
+  { title: 'Proposed Investments', uiFlag: 'hasProposed', prefix: 'pi',
+    master: 'Propose an investment portfolio?', types: [
+      ['proposed_investment_income', 'Income'], ['proposed_investment_stable', 'Stable'],
+      ['proposed_investment_balanced', 'Balanced'], ['proposed_investment_growth', 'Growth'],
+      ['proposed_investment_fully_offshore', 'Fully Offshore'],
+    ] },
+];
 function claimedNames(fields) {
   const s = new Set();
   for (const g of CHECK_GRID_GROUPS) for (const n of g.members) if (fields.has(n)) s.add(n);
-  for (const [n] of EXISTING_INVEST.types) if (fields.has(n)) s.add(n);
+  for (const g of INVEST_GROUPS) for (const [n] of g.types) if (fields.has(n)) s.add(n);
   return s;
 }
 
@@ -97,7 +111,7 @@ function formatError(name, type, value) {
 export function initDashboard(opts) {
   const state = {
     config: null, values: {}, conditional: {}, ui: {},
-    templateBytes: {}, fields: new Map(), reveals: {}, claimed: new Set(),
+    templateBytes: {}, docs: [], claimedGlobal: new Set(),
     scenario: null, lastZip: null, lastZipName: '',
   };
   let renderToken = 0;
@@ -206,13 +220,15 @@ export function initDashboard(opts) {
     buildPrintChecklist();
   }
 
-  // ---------- forms: gather fields across active generate docs, dedup by name ----------
+  // ---------- forms: gather fields PER active generate document ----------
+  // Each document keeps its own field set so the UI can show one section per
+  // document containing exactly that document's outstanding fields.
   async function buildForms() {
     const sc = state.scenario;
     const myToken = renderToken;
     const known = new Set(Object.keys(state.values));
-    state.fields = new Map();
-    state.reveals = {};
+    const docs = [];
+    const claimed = new Set();
     for (const d of sc.documents) {
       if (d.type !== 'generate') continue;
       if (d.status === 'conditional' && !state.conditional[d.doc]) continue;
@@ -230,41 +246,48 @@ export function initDashboard(opts) {
       if (!list) list = await listFields(state.templateBytes[d.doc]);
       if (myToken !== renderToken) return;
       const { auto, manual } = classifyFields(list, known);
-      Object.assign(state.reveals, tpl.reveals || {});
-      for (const f of auto) {
-        if (!state.fields.has(f.name)) {
-          state.fields.set(f.name, { name: f.name, type: f.type, inputType: inputTypeFor(f.name, f.type), label: prettyLabel(f.name), auto: true });
-        }
-      }
-      for (const f of manual) {
-        if (!state.fields.has(f.name)) state.fields.set(f.name, { ...f, auto: false });
-      }
+      const fields = new Map();
+      for (const f of auto) fields.set(f.name, { name: f.name, type: f.type, inputType: inputTypeFor(f.name, f.type), label: prettyLabel(f.name), auto: true });
+      for (const f of manual) if (!fields.has(f.name)) fields.set(f.name, { ...f, auto: false });
+      for (const n of claimedNames(fields)) claimed.add(n);
+      docs.push({ docId: d.doc, title: DOC_LABELS[d.doc] || prettyLabel(d.doc), fields, reveals: tpl.reveals || {} });
     }
-    state.claimed = claimedNames(state.fields);
+    state.docs = docs;
+    state.claimedGlobal = claimed;
+  }
+
+  // Keep every input bound to the same field name in sync (a field can appear in
+  // more than one document section). Skip the focused text input so typing isn't
+  // disrupted; checkboxes always mirror.
+  function syncField(name) {
+    const v = state.values[name];
+    const sel = 'input[data-field="' + (window.CSS && CSS.escape ? CSS.escape(name) : name) + '"]';
+    document.querySelectorAll(sel).forEach((i) => {
+      if (i.type === 'checkbox') i.checked = v === 'Yes' || v === true;
+      else if (document.activeElement !== i) i.value = v || '';
+    });
   }
 
   function fieldRow(f) {
     const row = document.createElement('div');
     row.className = 'row' + (f.auto ? ' auto' : '');
-    const lab = document.createElement('label');
-    lab.className = 'fld'; lab.setAttribute('for', 'f_' + f.name);
+    const lab = document.createElement('label'); lab.className = 'fld';
     lab.innerHTML = (f.label || f.name) + (!f.auto && f.inputType !== 'checkbox' ? '<span class="req" title="to complete">*</span>' : '') +
       (f.auto ? '<span class="chip chip-crm">CRM</span>' : '');
     row.appendChild(lab);
     const err = document.createElement('div'); err.className = 'err';
     let inp;
     if (f.inputType === 'checkbox') {
-      inp = document.createElement('input'); inp.type = 'checkbox';
-      inp.id = 'f_' + f.name;
+      inp = document.createElement('input'); inp.type = 'checkbox'; inp.dataset.field = f.name;
       inp.checked = state.values[f.name] === 'Yes' || state.values[f.name] === true;
       row.classList.add('check');
-      inp.addEventListener('change', () => { state.values[f.name] = inp.checked ? 'Yes' : ''; refresh(); });
+      inp.addEventListener('change', () => { state.values[f.name] = inp.checked ? 'Yes' : ''; syncField(f.name); refresh(); });
     } else {
-      inp = document.createElement('input'); inp.type = 'text'; inp.id = 'f_' + f.name;
+      inp = document.createElement('input'); inp.type = 'text'; inp.dataset.field = f.name;
       inp.value = state.values[f.name] || '';
       if (f.inputType === 'date') inp.placeholder = 'YYYY-MM-DD';
       inp.addEventListener('input', () => {
-        state.values[f.name] = inp.value;
+        state.values[f.name] = inp.value; syncField(f.name);
         const msg = formatError(f.name, f.type, inp.value);
         err.textContent = msg; row.classList.toggle('invalid', !!msg);
         refresh();
@@ -292,137 +315,144 @@ export function initDashboard(opts) {
   // a compact "label  ☐" checkbox cell for grid layouts
   function checkCell(f) {
     const cell = document.createElement('div'); cell.className = 'checkcell';
-    const lab = document.createElement('label'); lab.setAttribute('for', 'f_' + f.name);
-    lab.textContent = f.label || prettyLabel(f.name);
-    const inp = document.createElement('input'); inp.type = 'checkbox'; inp.id = 'f_' + f.name;
+    const lab = document.createElement('label'); lab.textContent = f.label || prettyLabel(f.name);
+    const inp = document.createElement('input'); inp.type = 'checkbox'; inp.dataset.field = f.name;
     inp.checked = state.values[f.name] === 'Yes' || state.values[f.name] === true;
-    inp.addEventListener('change', () => { state.values[f.name] = inp.checked ? 'Yes' : ''; refresh(); });
+    inp.addEventListener('change', () => { state.values[f.name] = inp.checked ? 'Yes' : ''; syncField(f.name); refresh(); });
     cell.append(lab, inp);
     return { cell, inp };
   }
 
-  function renderGenericSection(acc, sec, g) {
-    const body = makeSection(acc, sec, `${g.manual.length} to fill · ${g.auto.length} auto`);
-    const addWithReveal = (f) => {
-      const { row, inp } = fieldRow(f);
-      body.appendChild(row);
-      const pairedName = state.reveals[f.name];
-      if (pairedName && state.fields.has(pairedName)) {
-        const { row: prow } = fieldRow(state.fields.get(pairedName));
-        prow.classList.add('revealed'); prow.hidden = !inp.checked;
-        body.appendChild(prow);
-        inp.addEventListener('change', () => { prow.hidden = !inp.checked; });
-      }
-    };
-    g.manual.forEach(addWithReveal);
-    if (g.auto.length) {
-      const fold = document.createElement('div'); fold.className = 'autofold';
-      const fb = document.createElement('button'); fb.type = 'button';
-      fb.textContent = `▸ ${g.auto.length} auto-filled field${g.auto.length > 1 ? 's' : ''} from CRM — show`;
-      fb.addEventListener('click', () => fold.classList.toggle('open'));
-      const inner = document.createElement('div'); inner.className = 'auto';
-      g.auto.forEach((f) => { const { row } = fieldRow(f); inner.appendChild(row); });
-      fold.append(fb, inner); body.appendChild(fold);
-    }
-  }
-
-  function renderCheckGridGroup(acc, grp, present) {
-    const body = makeSection(acc, grp.title, `${present.length} option${present.length > 1 ? 's' : ''}`);
+  // a named multi-column checkbox sub-block (h4 + grid) inside a document section
+  function subGrid(body, doc, grp, present) {
+    const h = document.createElement('h4'); h.textContent = grp.title; body.appendChild(h);
     const grid = document.createElement('div'); grid.className = 'grid c' + grp.cols;
     const details = [];
     for (const name of present) {
-      const { cell, inp } = checkCell(state.fields.get(name));
+      const { cell, inp } = checkCell(doc.fields.get(name));
       grid.appendChild(cell);
-      const dn = state.reveals[name];
-      if (dn && state.fields.has(dn)) {
-        const { row: drow } = fieldRow(state.fields.get(dn));
+      const dn = doc.reveals[name];
+      if (dn && doc.fields.has(dn)) {
+        const { row: drow } = fieldRow(doc.fields.get(dn));
         drow.classList.add('revealed'); drow.hidden = !inp.checked;
         details.push(drow);
         inp.addEventListener('change', () => { drow.hidden = !inp.checked; });
       }
     }
     body.appendChild(grid);
-    details.forEach((d) => body.appendChild(d)); // revealed detail fields, full width
+    details.forEach((d) => body.appendChild(d));
   }
 
-  // master "has portfolio?" → per-type checkbox → reveal that type's amount field
-  function renderExistingInvest(acc, present) {
-    const body = makeSection(acc, EXISTING_INVEST.title, '');
+  // investment nested sub-block: master toggle → per-type checkbox → amount field
+  function subInvest(body, doc, g, present) {
+    const h = document.createElement('h4'); h.textContent = g.title; body.appendChild(h);
     const master = document.createElement('div'); master.className = 'checkcell master';
-    const mlab = document.createElement('label'); mlab.setAttribute('for', 'ui_has_existing');
-    mlab.textContent = 'Client has an existing investment portfolio?';
-    const mcb = document.createElement('input'); mcb.type = 'checkbox'; mcb.id = 'ui_has_existing';
-    mcb.checked = !!state.ui.hasExisting;
+    const mlab = document.createElement('label'); mlab.textContent = g.master;
+    const mcb = document.createElement('input'); mcb.type = 'checkbox'; mcb.checked = !!state.ui[g.uiFlag];
     master.append(mlab, mcb);
-    const container = document.createElement('div'); container.className = 'nested'; container.hidden = !state.ui.hasExisting;
+    const container = document.createElement('div'); container.className = 'nested'; container.hidden = !state.ui[g.uiFlag];
     const grid = document.createElement('div'); grid.className = 'grid c2';
     for (const [name, label] of present) {
       const wrap = document.createElement('div'); wrap.className = 'ei-type';
       const cell = document.createElement('div'); cell.className = 'checkcell';
-      const tlab = document.createElement('label'); tlab.setAttribute('for', 'ui_ei_' + name); tlab.textContent = label;
-      const tcb = document.createElement('input'); tcb.type = 'checkbox'; tcb.id = 'ui_ei_' + name;
-      tcb.checked = !!state.ui['ei_' + name];
+      const tlab = document.createElement('label'); tlab.textContent = label;
+      const tcb = document.createElement('input'); tcb.type = 'checkbox'; tcb.checked = !!state.ui[g.prefix + '_' + name];
       cell.append(tlab, tcb);
-      const { row: drow } = fieldRow(state.fields.get(name));
+      const { row: drow } = fieldRow(doc.fields.get(name));
       drow.classList.add('revealed'); drow.hidden = !tcb.checked;
       tcb.addEventListener('change', () => {
-        state.ui['ei_' + name] = tcb.checked;
-        drow.hidden = !tcb.checked;
-        if (!tcb.checked) { state.values[name] = ''; const di = $('f_' + name); if (di) di.value = ''; }
+        state.ui[g.prefix + '_' + name] = tcb.checked; drow.hidden = !tcb.checked;
+        if (!tcb.checked) { state.values[name] = ''; syncField(name); }
         refresh();
       });
-      wrap.append(cell, drow);
-      grid.appendChild(wrap);
+      wrap.append(cell, drow); grid.appendChild(wrap);
     }
     container.appendChild(grid);
     mcb.addEventListener('change', () => {
-      state.ui.hasExisting = mcb.checked; container.hidden = !mcb.checked;
+      state.ui[g.uiFlag] = mcb.checked; container.hidden = !mcb.checked;
       if (!mcb.checked) {
         container.querySelectorAll('input[type=checkbox]').forEach((c) => { c.checked = false; });
         container.querySelectorAll('.row.revealed').forEach((r) => { r.hidden = true; });
-        for (const [name] of present) { state.ui['ei_' + name] = false; state.values[name] = ''; const di = $('f_' + name); if (di) di.value = ''; }
+        for (const [name] of present) { state.ui[g.prefix + '_' + name] = false; state.values[name] = ''; syncField(name); }
       }
       refresh();
     });
     body.append(master, container);
   }
 
+  // count of outstanding manual fields for one document (for its section header)
+  function docManualOutstanding(doc) {
+    const controlled = new Set(Object.values(doc.reveals));
+    let n = 0;
+    for (const f of doc.fields.values()) {
+      if (f.auto || f.inputType === 'checkbox' || state.claimedGlobal.has(f.name) || controlled.has(f.name)) continue;
+      if (!(state.values[f.name] || '').trim()) n++;
+    }
+    return n;
+  }
+
+  function renderDocBody(body, doc) {
+    const controlled = new Set(Object.values(doc.reveals));
+    const genericManual = [], genericAuto = [];
+    for (const f of doc.fields.values()) {
+      if (controlled.has(f.name) || state.claimedGlobal.has(f.name)) continue;
+      (f.auto ? genericAuto : genericManual).push(f);
+    }
+    const addWithReveal = (f) => {
+      const { row, inp } = fieldRow(f); body.appendChild(row);
+      const dn = doc.reveals[f.name];
+      if (dn && doc.fields.has(dn)) {
+        const { row: prow } = fieldRow(doc.fields.get(dn));
+        prow.classList.add('revealed'); prow.hidden = !inp.checked;
+        body.appendChild(prow);
+        inp.addEventListener('change', () => { prow.hidden = !inp.checked; });
+      }
+    };
+    genericManual.forEach(addWithReveal);
+    if (genericAuto.length) {
+      const fold = document.createElement('div'); fold.className = 'autofold';
+      const fb = document.createElement('button'); fb.type = 'button';
+      fb.textContent = `▸ ${genericAuto.length} auto-filled field${genericAuto.length > 1 ? 's' : ''} from CRM — show`;
+      fb.addEventListener('click', () => fold.classList.toggle('open'));
+      const inner = document.createElement('div'); inner.className = 'auto';
+      genericAuto.forEach((f) => { const { row } = fieldRow(f); inner.appendChild(row); });
+      fold.append(fb, inner); body.appendChild(fold);
+    }
+    // named sub-sections that belong to THIS document
+    for (const grp of CHECK_GRID_GROUPS) {
+      const present = grp.members.filter((n) => doc.fields.has(n));
+      if (present.length) subGrid(body, doc, grp, present);
+    }
+    for (const g of INVEST_GROUPS) {
+      const present = g.types.filter(([n]) => doc.fields.has(n));
+      if (present.length) subInvest(body, doc, g, present);
+    }
+  }
+
+  // one top-level section per active generate document
   function renderFormsDOM() {
     const acc = $('acc'); acc.innerHTML = '';
-    const controlled = new Set(Object.values(state.reveals));
-    const claimed = state.claimed;
-    // 1) generic prefix sections (skip controlled detail fields + claimed special fields)
-    const groups = new Map();
-    for (const f of state.fields.values()) {
-      if (controlled.has(f.name) || claimed.has(f.name)) continue;
-      const sec = sectionFor(f.name);
-      if (!groups.has(sec)) groups.set(sec, { manual: [], auto: [] });
-      groups.get(sec)[f.auto ? 'auto' : 'manual'].push(f);
+    for (const doc of state.docs) {
+      const out = docManualOutstanding(doc);
+      const body = makeSection(acc, doc.title, out ? `${out} to fill` : 'complete');
+      renderDocBody(body, doc);
     }
-    [...groups.entries()]
-      .sort((a, b) => SECTION_ORDER.indexOf(a[0]) - SECTION_ORDER.indexOf(b[0]))
-      .forEach(([sec, g]) => renderGenericSection(acc, sec, g));
-    // 2) named multi-column checkbox sections
-    for (const grp of CHECK_GRID_GROUPS) {
-      const present = grp.members.filter((n) => state.fields.has(n));
-      if (present.length) renderCheckGridGroup(acc, grp, present);
-    }
-    // 3) existing investments (nested reveal)
-    const eiPresent = EXISTING_INVEST.types.filter(([n]) => state.fields.has(n));
-    if (eiPresent.length) renderExistingInvest(acc, eiPresent);
-    // open the first section
     const first = acc.querySelector('.acc'); if (first) first.classList.add('open');
   }
 
   // ---------- readiness / summary / gating ----------
   function manualStats() {
-    let total = 0, done = 0;
-    const controlled = new Set(Object.values(state.reveals));
-    for (const f of state.fields.values()) {
-      if (f.auto || controlled.has(f.name) || f.inputType === 'checkbox' || state.claimed.has(f.name)) continue;
-      total++;
-      if ((state.values[f.name] || '').trim()) done++;
+    // unique manual fields across all documents (a field can appear in several)
+    const seen = new Map();
+    for (const doc of state.docs) {
+      const controlled = new Set(Object.values(doc.reveals));
+      for (const f of doc.fields.values()) {
+        if (f.auto || f.inputType === 'checkbox' || state.claimedGlobal.has(f.name) || controlled.has(f.name)) continue;
+        if (!seen.has(f.name)) seen.set(f.name, f);
+      }
     }
+    let total = 0, done = 0;
+    for (const name of seen.keys()) { total++; if ((state.values[name] || '').trim()) done++; }
     return { total, done };
   }
   function condStats() {
@@ -431,7 +461,9 @@ export function initDashboard(opts) {
     return { total: c.length, answered };
   }
   function hasFormatErrors() {
-    for (const f of state.fields.values()) if (formatError(f.name, f.type, state.values[f.name])) return true;
+    for (const doc of state.docs) for (const f of doc.fields.values()) {
+      if (formatError(f.name, f.type, state.values[f.name])) return true;
+    }
     return false;
   }
   function activeDocs() {
@@ -539,7 +571,7 @@ export function initDashboard(opts) {
   }
   function resetAll() {
     state.values = {}; state.conditional = {}; state.ui = {}; state.scenario = null;
-    state.fields = new Map(); state.reveals = {}; state.claimed = new Set();
+    state.docs = []; state.claimedGlobal = new Set();
     state.lastZip = null;
     $('scenario').value = '';
     const p = $('parseStatus'); if (p) { p.textContent = ''; p.classList.remove('show'); }
