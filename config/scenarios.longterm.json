@@ -16,9 +16,9 @@
           "type": "generate"
         },
         {
-          "doc": "client_service_agreement",
+          "doc": "client_service_request",
           "status": "required",
-          "type": "collect"
+          "type": "generate"
         },
         {
           "doc": "cdd_form",
@@ -73,9 +73,9 @@
           "type": "generate"
         },
         {
-          "doc": "client_service_agreement",
+          "doc": "client_service_request",
           "status": "required",
-          "type": "collect"
+          "type": "generate"
         },
         {
           "doc": "cdd_form",
@@ -114,9 +114,9 @@
       "name": "Existing client – new product (no existing life cover)",
       "documents": [
         {
-          "doc": "client_service_agreement",
+          "doc": "client_service_request",
           "status": "required",
-          "type": "collect"
+          "type": "generate"
         },
         {
           "doc": "cdd_form_existing",
@@ -161,9 +161,9 @@
           "type": "generate"
         },
         {
-          "doc": "client_service_agreement",
+          "doc": "client_service_request",
           "status": "required",
-          "type": "collect"
+          "type": "generate"
         },
         {
           "doc": "cdd_form_existing",
@@ -213,9 +213,9 @@
           "type": "generate"
         },
         {
-          "doc": "client_service_agreement",
+          "doc": "client_service_request",
           "status": "required",
-          "type": "collect"
+          "type": "generate"
         },
         {
           "doc": "cdd_form_existing",
