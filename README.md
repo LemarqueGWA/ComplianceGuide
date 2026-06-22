@@ -6,6 +6,10 @@ per-scenario compliance pack. **All client data stays in the browser — nothing
 
 > Not yet ratified for adviser deployment — see **Governance** below.
 
+**Hosted (always-latest, opens in browser):** https://lemarquegwa.github.io/ComplianceGuide/
+GitHub Pages serves the live `main` — every push updates it automatically, no build step.
+⚠️ This Pages site is **public** (anyone with the link). Confidentiality tradeoff accepted for now; revisit (private host / Cloudflare Access) before wide rollout.
+
 ---
 
 ## For advisers — the single-file version (no Terminal)
