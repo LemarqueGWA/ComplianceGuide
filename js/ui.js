@@ -110,7 +110,7 @@ function formatError(name, type, value) {
 
 export function initDashboard(opts) {
   const state = {
-    config: null, values: {}, conditional: {}, ui: {},
+    config: null, values: {}, conditional: {}, ui: {}, verify: {},
     templateBytes: {}, docs: [], claimedGlobal: new Set(),
     currentLine: null, scenario: null, lastZip: null, lastZipName: '',
   };
@@ -170,7 +170,7 @@ export function initDashboard(opts) {
       const opt = document.createElement('option'); opt.value = sc.id; opt.textContent = sc.name; sel.appendChild(opt);
     }
     // changing line clears the active scenario + downstream
-    state.scenario = null; state.conditional = {};
+    state.scenario = null; state.conditional = {}; state.verify = {};
     enableTab('tab-checklist', false); enableTab('tab-forms', false);
     $('summaryStrip').classList.remove('show');
     $('checklist').innerHTML = ''; $('acc').innerHTML = '';
@@ -183,7 +183,7 @@ export function initDashboard(opts) {
   async function onScenarioChange() {
     const id = $('scenario').value;
     state.scenario = (state.currentLine ? state.currentLine.scenarios : []).find((s) => s.id === id) || null;
-    state.conditional = {};
+    state.conditional = {}; state.verify = {};
     if (!state.scenario) {
       enableTab('tab-checklist', false); enableTab('tab-forms', false);
       $('summaryStrip').classList.remove('show');
@@ -198,6 +198,7 @@ export function initDashboard(opts) {
     if (!state.scenario) return;
     ++renderToken;
     buildChecklistDOM();
+    renderVerifications();
     await buildForms();
     renderFormsDOM();
     refresh();
@@ -237,6 +238,50 @@ export function initDashboard(opts) {
       wrap.appendChild(div);
     }
     buildPrintChecklist();
+  }
+
+  // ---------- external verifications (link → upload, gate Generate) ----------
+  // A verification applies to the current scenario if any of its docs is an
+  // active (required or conditional-Yes) document in that scenario.
+  function applicableVerifications() {
+    const vs = state.config.verifications || [];
+    const active = new Set(activeDocs().map((d) => d.doc));
+    return vs.filter((v) => (v.docs || []).some((d) => active.has(d)));
+  }
+  function verifyOutstanding() {
+    return applicableVerifications().filter((v) => { const s = state.verify[v.id]; return !(s && s.clicked && s.bytes); }).length;
+  }
+  function renderVerifications() {
+    const wrap = $('verifyBlock'); if (!wrap) return;
+    const list = applicableVerifications();
+    wrap.innerHTML = '';
+    if (!list.length) return;
+    const h = document.createElement('h4'); h.textContent = 'Required verifications'; wrap.appendChild(h);
+    const hint = document.createElement('p'); hint.className = 'hint';
+    hint.textContent = 'Open each site, then upload the result. Generation stays locked until both are done.';
+    wrap.appendChild(hint);
+    for (const v of list) {
+      const st = state.verify[v.id] || (state.verify[v.id] = { clicked: false, name: null, bytes: null });
+      const cell = document.createElement('div'); cell.className = 'verify-cell';
+      const head = document.createElement('div'); head.className = 'verify-head';
+      head.innerHTML = `<b>${v.label}</b> <span class="verify-kind">(${v.kind})</span>`;
+      const rowEl = document.createElement('div'); rowEl.className = 'verify-item';
+      const a = document.createElement('a');
+      a.href = v.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.className = 'btn ghost'; a.textContent = 'Open ↗';
+      a.addEventListener('click', () => { st.clicked = true; setTimeout(() => { renderVerifications(); refresh(); }, 0); });
+      const file = document.createElement('input'); file.type = 'file'; if (v.accept) file.accept = v.accept;
+      file.disabled = !st.clicked;
+      file.addEventListener('change', async (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        st.name = f.name; st.bytes = new Uint8Array(await f.arrayBuffer());
+        renderVerifications(); refresh();
+      });
+      const status = document.createElement('span'); status.className = 'verify-status';
+      status.textContent = st.bytes ? `✓ ${st.name}` : (st.clicked ? `Upload the ${v.kind}` : 'Click “Open” first');
+      rowEl.append(a, file, status);
+      cell.append(head, rowEl); wrap.appendChild(cell);
+    }
   }
 
   // ---------- forms: gather fields PER active generate document ----------
@@ -490,7 +535,7 @@ export function initDashboard(opts) {
   }
   function ready() {
     const m = manualStats(), c = condStats();
-    return m.done === m.total && c.answered === c.total && !hasFormatErrors();
+    return m.done === m.total && c.answered === c.total && !hasFormatErrors() && verifyOutstanding() === 0;
   }
   function refresh() {
     if (!state.scenario) return;
@@ -502,10 +547,12 @@ export function initDashboard(opts) {
     const col = docs.filter((d) => d.type === 'collect').length;
     const ss = $('summaryStrip');
     ss.classList.add('show');
+    const vOut = verifyOutstanding();
     ss.innerHTML =
       `<span class="pill">✓ <b>${gen}</b> auto-generated</span>` +
       `<span class="pill">📎 <b>${col}</b> attach manually</span>` +
       `<span class="pill">❓ <b>${c.total - c.answered}</b> conditionals unanswered</span>` +
+      (applicableVerifications().length ? `<span class="pill">🔗 <b>${vOut}</b> verifications outstanding</span>` : '') +
       `<span class="pill"><b>${m.total - m.done}</b> fields outstanding</span>`;
     const ok = ready();
     const gen2 = $('generate'), force = $('forceBtn');
@@ -513,6 +560,7 @@ export function initDashboard(opts) {
     const miss = [];
     if (m.done < m.total) miss.push(`${m.total - m.done} field(s)`);
     if (c.answered < c.total) miss.push(`${c.total - c.answered} conditional(s)`);
+    if (vOut) miss.push(`${vOut} verification(s)`);
     if (hasFormatErrors()) miss.push('format errors');
     gen2.title = ok ? 'Generate draft pack' : 'Missing: ' + miss.join(', ');
     if (force) force.style.display = ok ? 'none' : 'inline-block';
@@ -521,6 +569,12 @@ export function initDashboard(opts) {
 
   // ---------- generate ----------
   async function onGenerate() {
+    // hard gate: the external verifications cannot be bypassed (even by "Generate anyway")
+    if (verifyOutstanding() > 0) {
+      if ($('status')) $('status').textContent = 'Open the verification link(s) and upload the required screenshot / PDF before generating.';
+      setTab('checklist');
+      return;
+    }
     const btn = $('generate'); const force = $('forceBtn');
     btn.disabled = true; if (force) force.disabled = true;
     const oldTxt = btn.textContent; btn.textContent = 'Generating…';
@@ -545,6 +599,14 @@ export function initDashboard(opts) {
         date: state.values.meta_date_generated || '',
       });
       files.push({ name: gwaFilename('Checklist', ref, date), bytes: checklist });
+      // uploaded external verifications (screenshot / PDF report) travel with the pack
+      for (const v of applicableVerifications()) {
+        const s = state.verify[v.id];
+        if (s && s.bytes) {
+          const ext = (s.name && s.name.includes('.')) ? s.name.split('.').pop() : (v.accept === 'application/pdf' ? 'pdf' : 'png');
+          files.push({ name: `GWA_${v.id}_${ref}_${date.getFullYear()}.${ext}`, bytes: s.bytes });
+        }
+      }
       const zipBytes = await buildBundle(files);
       state.lastZip = zipBytes;
       state.lastZipName = `GWA_Bundle_${ref}_${date.getFullYear()}.zip`;
@@ -596,7 +658,7 @@ export function initDashboard(opts) {
     finally { e.target.value = ''; }
   }
   function resetAll() {
-    state.values = {}; state.conditional = {}; state.ui = {}; state.scenario = null;
+    state.values = {}; state.conditional = {}; state.ui = {}; state.verify = {}; state.scenario = null;
     state.docs = []; state.claimedGlobal = new Set();
     state.lastZip = null;
     if ($('line') && state.config.lines.length) { $('line').value = state.config.lines[0].id; populateScenarios(state.config.lines[0].id); }

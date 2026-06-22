@@ -37,7 +37,8 @@ const jszipUmd = readText('vendor/jszip.min.js');
 const templatesCfg = JSON.parse(readText('config/templates.json'));
 const linesCfg = JSON.parse(readText('config/lines.json'));
 const lines = linesCfg.map((l) => ({ id: l.id, name: l.name, scenarios: JSON.parse(readText(l.file)).scenarios }));
-const config = { templates: templatesCfg, lines };
+const verifications = JSON.parse(readText('config/verifications.json'));
+const config = { templates: templatesCfg, lines, verifications };
 
 const templatesB64 = {};
 for (const [id, t] of Object.entries(templatesCfg)) {
@@ -114,6 +115,7 @@ ${css}
       <h2>Compliance checklist</h2>
       <p class="hint">Auto-generated docs are filled by this tool; attach-manually docs you add to the file. Answer each conditional.</p>
       <div id="checklist" class="checklist"></div>
+      <div id="verifyBlock"></div>
     </div>
   </section>
   <section class="panel" id="p-forms" role="tabpanel" aria-labelledby="tab-forms">
