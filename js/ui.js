@@ -266,19 +266,26 @@ export function initDashboard(opts) {
       const head = document.createElement('div'); head.className = 'verify-head';
       head.innerHTML = `<b>${v.label}</b> <span class="verify-kind">(${v.kind})</span>`;
       const rowEl = document.createElement('div'); rowEl.className = 'verify-item';
+      const file = document.createElement('input'); file.type = 'file'; if (v.accept) file.accept = v.accept;
+      file.disabled = !st.clicked;
+      const status = document.createElement('span'); status.className = 'verify-status';
+      status.textContent = st.bytes ? `✓ ${st.name}` : (st.clicked ? `Upload the ${v.kind}` : 'Click “Open” first');
       const a = document.createElement('a');
       a.href = v.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
       a.className = 'btn ghost'; a.textContent = 'Open ↗';
-      a.addEventListener('click', () => { st.clicked = true; setTimeout(() => { renderVerifications(); refresh(); }, 0); });
-      const file = document.createElement('input'); file.type = 'file'; if (v.accept) file.accept = v.accept;
-      file.disabled = !st.clicked;
+      // Update IN PLACE — do NOT re-render here: rebuilding the block would destroy
+      // this anchor mid-click and the just-opened tab ends up blank (file:// esp.).
+      a.addEventListener('click', () => {
+        st.clicked = true; file.disabled = false;
+        if (!st.bytes) status.textContent = `Upload the ${v.kind}`;
+        refresh();
+      });
       file.addEventListener('change', async (e) => {
         const f = e.target.files[0]; if (!f) return;
         st.name = f.name; st.bytes = new Uint8Array(await f.arrayBuffer());
-        renderVerifications(); refresh();
+        status.textContent = `✓ ${f.name}`;
+        refresh();
       });
-      const status = document.createElement('span'); status.className = 'verify-status';
-      status.textContent = st.bytes ? `✓ ${st.name}` : (st.clicked ? `Upload the ${v.kind}` : 'Click “Open” first');
       rowEl.append(a, file, status);
       cell.append(head, rowEl); wrap.appendChild(cell);
     }
