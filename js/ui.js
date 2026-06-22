@@ -112,7 +112,7 @@ export function initDashboard(opts) {
   const state = {
     config: null, values: {}, conditional: {}, ui: {},
     templateBytes: {}, docs: [], claimedGlobal: new Set(),
-    scenario: null, lastZip: null, lastZipName: '',
+    currentLine: null, scenario: null, lastZip: null, lastZipName: '',
   };
   let renderToken = 0;
 
@@ -160,10 +160,29 @@ export function initDashboard(opts) {
     }
   }
 
+  // ---------- product line → scenario ----------
+  function populateScenarios(lineId) {
+    state.currentLine = state.config.lines.find((l) => l.id === lineId) || state.config.lines[0];
+    const sel = $('scenario');
+    sel.innerHTML = '';
+    const ph = document.createElement('option'); ph.value = ''; ph.textContent = '— choose —'; sel.appendChild(ph);
+    for (const sc of state.currentLine.scenarios) {
+      const opt = document.createElement('option'); opt.value = sc.id; opt.textContent = sc.name; sel.appendChild(opt);
+    }
+    // changing line clears the active scenario + downstream
+    state.scenario = null; state.conditional = {};
+    enableTab('tab-checklist', false); enableTab('tab-forms', false);
+    $('summaryStrip').classList.remove('show');
+    $('checklist').innerHTML = ''; $('acc').innerHTML = '';
+    if ($('generate')) $('generate').disabled = true;
+  }
+
+  function onLineChange() { populateScenarios($('line').value); }
+
   // ---------- scenario change ----------
   async function onScenarioChange() {
     const id = $('scenario').value;
-    state.scenario = state.config.scenarios.scenarios.find((s) => s.id === id) || null;
+    state.scenario = (state.currentLine ? state.currentLine.scenarios : []).find((s) => s.id === id) || null;
     state.conditional = {};
     if (!state.scenario) {
       enableTab('tab-checklist', false); enableTab('tab-forms', false);
@@ -553,7 +572,7 @@ export function initDashboard(opts) {
 
   // ---------- save / load / reset ----------
   function saveProgress() {
-    const data = { scenario: state.scenario ? state.scenario.id : null, values: state.values, conditional: state.conditional, ui: state.ui, _meta: { draft: true } };
+    const data = { line: state.currentLine ? state.currentLine.id : null, scenario: state.scenario ? state.scenario.id : null, values: state.values, conditional: state.conditional, ui: state.ui, _meta: { draft: true } };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     download(blob, 'GWA_Dashboard_progress_DRAFT_CONFIDENTIAL.json');
     if ($('status')) $('status').textContent = 'Progress saved to JSON — store in your access-controlled system (POPIA).';
@@ -562,9 +581,16 @@ export function initDashboard(opts) {
     const file = e.target.files[0]; if (!file) return;
     try {
       const data = JSON.parse(await file.text());
-      state.values = data.values || {}; state.conditional = data.conditional || {}; state.ui = data.ui || {};
-      if (data.scenario) { $('scenario').value = data.scenario; }
-      state.scenario = state.config.scenarios.scenarios.find((s) => s.id === ($('scenario').value)) || null;
+      state.values = data.values || {}; state.ui = data.ui || {};
+      // resolve the line (saved id, or whichever line owns the scenario)
+      let lineId = data.line;
+      if (!lineId && data.scenario) { const L = state.config.lines.find((l) => l.scenarios.some((s) => s.id === data.scenario)); lineId = L && L.id; }
+      if (lineId) { $('line').value = lineId; populateScenarios(lineId); }
+      state.conditional = data.conditional || {};
+      if (data.scenario) {
+        $('scenario').value = data.scenario;
+        state.scenario = state.currentLine.scenarios.find((s) => s.id === data.scenario) || null;
+      }
       if (state.scenario) { enableTab('tab-checklist', true); enableTab('tab-forms', true); await renderScenario(); setTab('forms'); }
     } catch (err) { console.error(err); alert('Could not read that progress file.'); }
     finally { e.target.value = ''; }
@@ -573,6 +599,7 @@ export function initDashboard(opts) {
     state.values = {}; state.conditional = {}; state.ui = {}; state.scenario = null;
     state.docs = []; state.claimedGlobal = new Set();
     state.lastZip = null;
+    if ($('line') && state.config.lines.length) { $('line').value = state.config.lines[0].id; populateScenarios(state.config.lines[0].id); }
     $('scenario').value = '';
     const p = $('parseStatus'); if (p) { p.textContent = ''; p.classList.remove('show'); }
     $('checklist').innerHTML = ''; $('acc').innerHTML = ''; $('summaryStrip').classList.remove('show');
@@ -605,14 +632,17 @@ export function initDashboard(opts) {
   async function init() {
     try {
       state.config = await opts.loadConfig();
-      const sel = $('scenario');
-      const ph = document.createElement('option'); ph.value = ''; ph.textContent = '— choose —'; sel.appendChild(ph);
-      for (const sc of state.config.scenarios.scenarios) {
-        const opt = document.createElement('option'); opt.value = sc.id; opt.textContent = sc.name; sel.appendChild(opt);
+      // backward-compat: accept either {lines:[...]} or the old {scenarios:{line,scenarios}}
+      if (!state.config.lines) state.config.lines = [{ id: 'investment', name: state.config.scenarios.line || 'Investment', scenarios: state.config.scenarios.scenarios }];
+      const lineSel = $('line');
+      for (const l of state.config.lines) {
+        const opt = document.createElement('option'); opt.value = l.id; opt.textContent = l.name; lineSel.appendChild(opt);
       }
+      lineSel.addEventListener('change', onLineChange);
+      populateScenarios(state.config.lines[0].id);
       wireTabs();
       $('crmFile').addEventListener('change', onUpload);
-      sel.addEventListener('change', onScenarioChange);
+      $('scenario').addEventListener('change', onScenarioChange);
       $('generate').addEventListener('click', onGenerate);
       if ($('forceBtn')) $('forceBtn').addEventListener('click', () => {
         if (confirm('Generate the pack with information still outstanding? Draft fields may be blank.')) onGenerate();

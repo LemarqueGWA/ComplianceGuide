@@ -19,4 +19,11 @@ export const DOC_LABELS = {
   transaction_register: 'Transaction Register',
   asisa_replacement: 'Replacement (ASISA)',
   product_review_declaration: 'Product Review Declaration',
+  // Long Term Insurance line
+  letter_of_authority: 'Letter of Authority / Consent',
+  client_service_agreement: 'Client Service Agreement',
+  rar: 'RAR (Replacement Advice Record)',
+  longterm_advice_agreement: 'Long-term Advice Agreement',
+  existing_longterm_advice_agreement: 'Existing Long-term Product Advice Agreement',
+  risk_product_review_declaration: 'Risk Product Review Declaration',
 };

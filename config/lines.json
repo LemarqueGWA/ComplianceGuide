@@ -1,0 +1,4 @@
+[
+  { "id": "investment", "name": "Investment", "file": "config/scenarios.investment.json" },
+  { "id": "longterm", "name": "Long Term Insurance", "file": "config/scenarios.longterm.json" }
+]

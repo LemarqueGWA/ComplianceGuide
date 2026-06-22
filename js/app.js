@@ -23,14 +23,17 @@ let TEMPLATE_FIELDS = {};
 
 initDashboard({
   loadConfig: async () => {
-    const [templates, scenarios, fields] = await Promise.all([
+    const [templates, linesReg, fields] = await Promise.all([
       fetch('config/templates.json').then((r) => r.json()),
-      fetch('config/scenarios.investment.json').then((r) => r.json()),
+      fetch('config/lines.json').then((r) => r.json()),
       // pre-extracted at build time; optional in dev (falls back to in-browser parse)
       fetch('config/template-fields.json').then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
     ]);
+    const lines = await Promise.all(linesReg.map(async (l) => ({
+      id: l.id, name: l.name, scenarios: (await fetch(l.file).then((r) => r.json())).scenarios,
+    })));
     TEMPLATE_FIELDS = fields || {};
-    return { templates, scenarios };
+    return { templates, lines };
   },
   listFields: async (id) => TEMPLATE_FIELDS[id] || null,
   getTemplateBytes: async (_id, tpl) => {

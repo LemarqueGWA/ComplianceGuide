@@ -35,8 +35,9 @@ const jszipUmd = readText('vendor/jszip.min.js');
 
 // 2. Gather embedded data.
 const templatesCfg = JSON.parse(readText('config/templates.json'));
-const scenariosCfg = JSON.parse(readText('config/scenarios.investment.json'));
-const config = { templates: templatesCfg, scenarios: scenariosCfg };
+const linesCfg = JSON.parse(readText('config/lines.json'));
+const lines = linesCfg.map((l) => ({ id: l.id, name: l.name, scenarios: JSON.parse(readText(l.file)).scenarios }));
+const config = { templates: templatesCfg, lines };
 
 const templatesB64 = {};
 for (const [id, t] of Object.entries(templatesCfg)) {
@@ -73,7 +74,7 @@ ${css}
   <div class="headwrap">
     <img class="logo" src="data:image/png;base64,${logoB64}" alt="Global Wealth Advisory (Pty) Ltd">
     <span class="divider"></span>
-    <div class="headtext"><div class="sub">Document Pre-population · Investment line · DRAFT tool</div></div>
+    <div class="headtext"><div class="sub">Document Pre-population · DRAFT tool</div></div>
   </div>
 </header>
 <nav class="tabs">
@@ -101,7 +102,10 @@ ${css}
   <section class="panel" id="p-scenario" role="tabpanel" aria-labelledby="tab-scenario">
     <div class="card">
       <h2>Scenario</h2>
-      <p class="hint">Determines which documents are required, per the GWA Compliance Guide.</p>
+      <p class="hint">Pick the product line, then the scenario. Determines which documents are required, per the GWA Compliance Guide.</p>
+      <label class="fld" for="line">Product line</label>
+      <select id="line" style="margin-bottom:14px"></select>
+      <label class="fld" for="scenario">Scenario</label>
       <select id="scenario"></select>
     </div>
   </section>
