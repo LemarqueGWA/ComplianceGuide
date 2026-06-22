@@ -26,8 +26,17 @@ test('buildChecklist labels each row by status and type', () => {
   assert.equal(repl.note, 'If applicable');
 });
 
-test('collect docs without a template still get a readable title', () => {
+test('mapped doc keys use the friendly DOC_LABELS name', () => {
   const rows = buildChecklist(scenario, templates);
   const ease = rows.find(r => r.doc === 'easefica_risk_rating');
-  assert.equal(ease.title, 'Easefica Risk Rating');
+  assert.equal(ease.title, 'Client Risk Rating (EaseFICA report)');
+  const mandate = rows.find(r => r.doc === 'gwa_mandate');
+  assert.equal(mandate.title, 'GWA Mandate');
+});
+
+test('unmapped doc keys fall back to prettyLabel', () => {
+  const rows = buildChecklist(scenario, templates);
+  // 'replacement_asisa' is not in DOC_LABELS (canonical key is asisa_replacement)
+  const repl = rows.find(r => r.doc === 'replacement_asisa');
+  assert.equal(repl.title, 'Replacement Asisa');
 });

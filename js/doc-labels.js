@@ -1,0 +1,39 @@
+// Human-friendly checklist names for scenario document keys. Without this map,
+// keys title-case to junk (e.g. asisa_replacement -> "Asisa Replacement").
+// Used by checklist.js: label = DOC_LABELS[key] || prettyLabel(key).
+export const DOC_LABELS = {
+  disclosure_letter: 'Disclosure / Introduction Letter',
+  broker_appointment: 'Broker Appointment / Letter of Authority',
+  gwa_mandate: 'GWA Mandate',
+  client_service_request: 'Client Service Request',
+  cdd_form: 'CDD Form (new client)',
+  cdd_form_existing: 'CDD Form (existing client)',
+  suitability_questionnaire: 'Personal Investor Suitability Questionnaire',
+  investment_proposal: 'Investment Proposal',
+  portfolio_allocation: 'Investment Portfolio Allocation Summary',
+  profile_confirmation: 'Personal Investor Profile Confirmation',
+  advice_agreement: 'Advice Agreement for Investments',
+  fica_id_proof: 'FICA Documents (ID & proof of address)',
+  easefica_risk_rating: 'Client Risk Rating (EaseFICA report)',
+  pep_screening: 'PEP Screening',
+  transaction_register: 'Transaction Register',
+  asisa_replacement: 'Replacement (ASISA)',
+  product_review_declaration: 'Product Review Declaration',
+  // Long Term Insurance line
+  letter_of_authority: 'Letter of Authority / Consent',
+  client_service_agreement: 'Client Service Agreement',
+  rar: 'RAR (Replacement Advice Record)',
+  longterm_advice_agreement: 'Long-term Advice Agreement',
+  existing_longterm_advice_agreement: 'Existing Long-term Product Advice Agreement',
+  risk_product_review_declaration: 'Risk Product Review Declaration',
+  // Medical and GAP line
+  fic_tfs_screenshot: 'FIC (TFS List) Screenshot',
+  get_quote: 'Get Quote (attach to Advice Agreement)',
+  medical_gap_advice_agreement: 'Advice Agreement – Medical & Gap',
+  notify_medical_aid_plan_change: 'Notify medical aid clients of annual plan change (Mailchimp)',
+  // Short Term line
+  comparative_quotes: 'Comparative Quotes (via email)',
+  shortterm_advice_agreement: 'Advice Agreement – Short Term',
+  annual_review_letter: 'Annual Review Letter / Notification',
+  client_instruction_confirmation: 'Client Instruction & Email Confirmation',
+};

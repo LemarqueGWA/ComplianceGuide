@@ -1,0 +1,1176 @@
+{
+  "client_service_request": [
+    {
+      "name": "Date_es_:signer2",
+      "type": "Tx"
+    },
+    {
+      "name": "Signature1_es_:signer1:signatureblock",
+      "type": "Tx"
+    },
+    {
+      "name": "Signature2_es_:signer2:signatureblock",
+      "type": "Tx"
+    },
+    {
+      "name": "client_full_name",
+      "type": "Tx"
+    },
+    {
+      "name": "adviser_name",
+      "type": "Tx"
+    },
+    {
+      "name": "service_request_investment_planning",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_plan_for_retirement",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_plan_at_retirement",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_specific_goal",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_cash_management_solution",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_fin_plan_death",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_short_term_insurance",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_fin_plan_disability",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_medical_aid",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_fin_plan_dread_disease",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_gap_cover",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_business_assurance",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_will_testament",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_estate_planning",
+      "type": "checkbox"
+    },
+    {
+      "name": "service_request_other",
+      "type": "checkbox"
+    },
+    {
+      "name": "the_advice_and_assistance_required_is_further_specified_and_limited_as_follows",
+      "type": "Tx"
+    }
+  ],
+  "gwa_mandate": [
+    {
+      "name": "on",
+      "type": "Tx"
+    },
+    {
+      "name": "on_2",
+      "type": "Tx"
+    },
+    {
+      "name": "Signature2",
+      "type": "Sig"
+    },
+    {
+      "name": "Signature3",
+      "type": "Sig"
+    },
+    {
+      "name": "Signature13",
+      "type": "Sig"
+    },
+    {
+      "name": "Signature14",
+      "type": "Sig"
+    },
+    {
+      "name": "Signature15",
+      "type": "Sig"
+    },
+    {
+      "name": "Signature16",
+      "type": "Sig"
+    },
+    {
+      "name": "Text18",
+      "type": "Tx"
+    },
+    {
+      "name": "Text19",
+      "type": "Tx"
+    },
+    {
+      "name": "client_full_name",
+      "type": "Tx"
+    },
+    {
+      "name": "client_id_number",
+      "type": "Tx"
+    },
+    {
+      "name": "investment_objective_max_liquidity",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_objective_combination_liquidity_cap_preservation",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_objective_capital_preservation",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_objective_combination_liquidity_cap_growth",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_objective_capital_growth",
+      "type": "checkbox"
+    },
+    {
+      "name": "term_medium_long",
+      "type": "checkbox"
+    },
+    {
+      "name": "term_long",
+      "type": "checkbox"
+    },
+    {
+      "name": "term_medium",
+      "type": "checkbox"
+    },
+    {
+      "name": "term_short",
+      "type": "checkbox"
+    },
+    {
+      "name": "risk_profile_stable",
+      "type": "checkbox"
+    },
+    {
+      "name": "risk_profile_balanced",
+      "type": "checkbox"
+    },
+    {
+      "name": "risk_profile_aggressive",
+      "type": "checkbox"
+    },
+    {
+      "name": "restrictions_more_information_on_client_objectives_risk_profile_time_horizon",
+      "type": "Tx"
+    },
+    {
+      "name": "contact_address",
+      "type": "Tx"
+    },
+    {
+      "name": "contact_email",
+      "type": "Tx"
+    }
+  ],
+  "broker_appointment": [
+    {
+      "name": "Signed at_es_:signer1",
+      "type": "Tx"
+    },
+    {
+      "name": "Date_es_:signer1:date",
+      "type": "Tx"
+    },
+    {
+      "name": "Signature Block2_es_:signer1:signatureblock",
+      "type": "Tx"
+    },
+    {
+      "name": "client_full_name",
+      "type": "Tx"
+    },
+    {
+      "name": "acting_on_behalf",
+      "type": "Tx"
+    },
+    {
+      "name": "client_id_number",
+      "type": "Tx"
+    },
+    {
+      "name": "contact_cell",
+      "type": "Tx"
+    },
+    {
+      "name": "check_comprehensive_info",
+      "type": "checkbox"
+    },
+    {
+      "name": "check_limited_information",
+      "type": "checkbox"
+    },
+    {
+      "name": "limited_info_company1",
+      "type": "Tx"
+    },
+    {
+      "name": "limited_info_company2",
+      "type": "Tx"
+    },
+    {
+      "name": "limited_info_company3",
+      "type": "Tx"
+    },
+    {
+      "name": "limited_info_company4",
+      "type": "Tx"
+    },
+    {
+      "name": "adviser_name",
+      "type": "Tx"
+    },
+    {
+      "name": "consent_only",
+      "type": "checkbox"
+    },
+    {
+      "name": "consent_and_appoint",
+      "type": "checkbox"
+    }
+  ],
+  "cdd_form": [
+    {
+      "name": "12",
+      "type": "checkbox"
+    },
+    {
+      "name": "1_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "16_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "2_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "15_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "3_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "14_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "4_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "5_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "6_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "10_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "11_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "7_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "17_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "8_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "18_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box13_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box14_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box15_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "9_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box16_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box17_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box18_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box11_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box20_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box21_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box22_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box23_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box24_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box25_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box26_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box27_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box28_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box29_es_:signer2",
+      "type": "checkbox"
+    },
+    {
+      "name": "Signature1_es_:signer1:signatureblock",
+      "type": "Tx"
+    },
+    {
+      "name": "Date_es_:signer1",
+      "type": "Tx"
+    },
+    {
+      "name": "Checkbox - None",
+      "type": "checkbox"
+    },
+    {
+      "name": "client_full_name",
+      "type": "Tx"
+    },
+    {
+      "name": "client_id_number",
+      "type": "Tx"
+    },
+    {
+      "name": "client_occupation",
+      "type": "Tx"
+    },
+    {
+      "name": "client_employer",
+      "type": "Tx"
+    },
+    {
+      "name": "client_industry",
+      "type": "Tx"
+    },
+    {
+      "name": "other_specify_details",
+      "type": "Tx"
+    },
+    {
+      "name": "income_from_salary",
+      "type": "Tx"
+    },
+    {
+      "name": "company_profits",
+      "type": "Tx"
+    },
+    {
+      "name": "savings_investment_proceeds",
+      "type": "Tx"
+    },
+    {
+      "name": "gift_donation",
+      "type": "Tx"
+    },
+    {
+      "name": "retirement_income",
+      "type": "Tx"
+    },
+    {
+      "name": "sale_rental_income",
+      "type": "Tx"
+    },
+    {
+      "name": "sale_of_company",
+      "type": "Tx"
+    },
+    {
+      "name": "divorce_settlement",
+      "type": "Tx"
+    },
+    {
+      "name": "inheritance",
+      "type": "Tx"
+    },
+    {
+      "name": "other_source_of_fund_details",
+      "type": "Tx"
+    },
+    {
+      "name": "screening_date",
+      "type": "Tx"
+    },
+    {
+      "name": "who_did_screening",
+      "type": "Tx"
+    },
+    {
+      "name": "pep_client_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "pep_client_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_infome_from_salary",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_comnpany_profits",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_savings_investments",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_gift_donation",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_retirement_income",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_sale_rental_income",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_sale_of_company",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_divorce_settlement",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_inheritance",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_other",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_long_term_insurance",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_fin_planning",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_wealth_management",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_single_transaction",
+      "type": "checkbox"
+    },
+    {
+      "name": "select_other_purpose_of_business",
+      "type": "checkbox"
+    }
+  ],
+  "cdd_form_existing": [
+    {
+      "name": "Client signature",
+      "type": "Sig"
+    },
+    {
+      "name": "Date",
+      "type": "Tx"
+    },
+    {
+      "name": "client_full_name",
+      "type": "Tx"
+    },
+    {
+      "name": "client_id_number",
+      "type": "Tx"
+    },
+    {
+      "name": "client_occupation",
+      "type": "Tx"
+    },
+    {
+      "name": "client_employer",
+      "type": "Tx"
+    },
+    {
+      "name": "client_industry",
+      "type": "Tx"
+    },
+    {
+      "name": "other-detail",
+      "type": "Tx"
+    },
+    {
+      "name": "details_of_salary",
+      "type": "Tx"
+    },
+    {
+      "name": "details_company_profits",
+      "type": "Tx"
+    },
+    {
+      "name": "details_savings_investments",
+      "type": "Tx"
+    },
+    {
+      "name": "details_gift_donation",
+      "type": "Tx"
+    },
+    {
+      "name": "details_retirement_income",
+      "type": "Tx"
+    },
+    {
+      "name": "details_sale_rental_income",
+      "type": "Tx"
+    },
+    {
+      "name": "details_sale_of_company",
+      "type": "Tx"
+    },
+    {
+      "name": "details_divorce",
+      "type": "Tx"
+    },
+    {
+      "name": "details_inheritance",
+      "type": "Tx"
+    },
+    {
+      "name": "details_other",
+      "type": "Tx"
+    },
+    {
+      "name": "date_of_screening",
+      "type": "Tx"
+    },
+    {
+      "name": "who_did_screen",
+      "type": "Tx"
+    }
+  ],
+  "suitability_questionnaire": [
+    {
+      "name": "RTotal Fixed Assets eg property vehicles",
+      "type": "Tx"
+    },
+    {
+      "name": "RTotal Financial Assets eg savings retirement funds",
+      "type": "Tx"
+    },
+    {
+      "name": "RShort Term  High Interest Liabilities eg loans credit cards",
+      "type": "Tx"
+    },
+    {
+      "name": "RLong Term Liabilities eg homeloans",
+      "type": "Tx"
+    },
+    {
+      "name": "RCurrent Regular Monthly Income",
+      "type": "Tx"
+    },
+    {
+      "name": "Check Box14",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box15",
+      "type": "checkbox"
+    },
+    {
+      "name": "Text1",
+      "type": "Tx"
+    },
+    {
+      "name": "Text17",
+      "type": "Tx"
+    },
+    {
+      "name": "Check Box18",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box19",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box20",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box21",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box22",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box23",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box24",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box25",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box26",
+      "type": "checkbox"
+    },
+    {
+      "name": "Text27",
+      "type": "Tx"
+    },
+    {
+      "name": "Check Box28",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box29",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box30",
+      "type": "checkbox"
+    },
+    {
+      "name": "Signature31",
+      "type": "Sig"
+    },
+    {
+      "name": "Text32",
+      "type": "Tx"
+    },
+    {
+      "name": "Check Box33",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box34",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box35",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box36",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box37",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box38",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box39",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box40",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box41",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box42",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box43",
+      "type": "checkbox"
+    },
+    {
+      "name": "client_full_name",
+      "type": "Tx"
+    },
+    {
+      "name": "investment_goal_save_for_retirement",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_goal_income_during_retirement",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_goal_wealth_creation",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_goal_other_detail",
+      "type": "Tx"
+    },
+    {
+      "name": "investment_goal_wealth_preservation",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_goal_externalize_assets",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_goal_other",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_term_short",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_term_medium",
+      "type": "checkbox"
+    },
+    {
+      "name": "investment_term_long",
+      "type": "checkbox"
+    },
+    {
+      "name": "portfolio_objective_draw_income",
+      "type": "checkbox"
+    },
+    {
+      "name": "portfolio_objective_preserve_capital",
+      "type": "checkbox"
+    },
+    {
+      "name": "portfolio_objective_grow_capital",
+      "type": "checkbox"
+    },
+    {
+      "name": "portfolio_objective_combination",
+      "type": "checkbox"
+    }
+  ],
+  "profile_confirmation": [
+    {
+      "name": "Text7",
+      "type": "Tx"
+    },
+    {
+      "name": "Text8",
+      "type": "Tx"
+    },
+    {
+      "name": "Text9",
+      "type": "Tx"
+    },
+    {
+      "name": "Text10",
+      "type": "Tx"
+    },
+    {
+      "name": "Signature11",
+      "type": "Sig"
+    },
+    {
+      "name": "Signature12",
+      "type": "Sig"
+    },
+    {
+      "name": "existing_profile_on_record_stable",
+      "type": "checkbox"
+    },
+    {
+      "name": "existing_profile_on_record_balanced",
+      "type": "checkbox"
+    },
+    {
+      "name": "existing_profile_on_record_growth",
+      "type": "checkbox"
+    },
+    {
+      "name": "date_of_original_profile",
+      "type": "Tx"
+    },
+    {
+      "name": "existing_profile_on_record_remains_the_same",
+      "type": "checkbox"
+    },
+    {
+      "name": "existing_profile_on_record_no_longer_adequate",
+      "type": "checkbox"
+    }
+  ],
+  "portfolio_allocation": [
+    {
+      "name": "existing_investment_income",
+      "type": "Tx"
+    },
+    {
+      "name": "existing_investment_stable",
+      "type": "Tx"
+    },
+    {
+      "name": "existing_investment_balanced",
+      "type": "Tx"
+    },
+    {
+      "name": "existing_investment_growth",
+      "type": "Tx"
+    },
+    {
+      "name": "existing_investment_fully_offshore",
+      "type": "Tx"
+    },
+    {
+      "name": "proposed_investment_income",
+      "type": "Tx"
+    },
+    {
+      "name": "proposed_investment_stable",
+      "type": "Tx"
+    },
+    {
+      "name": "proposed_investment_balanced",
+      "type": "Tx"
+    },
+    {
+      "name": "proposed_investment_growth",
+      "type": "Tx"
+    },
+    {
+      "name": "proposed_investment_fully_offshore",
+      "type": "Tx"
+    }
+  ],
+  "advice_agreement": [
+    {
+      "name": "Financial product wrapper Eg EndowmentRetire ment annuityLiving annuity Preservation fundRow1",
+      "type": "Tx"
+    },
+    {
+      "name": "Name of product supplierRow1",
+      "type": "Tx"
+    },
+    {
+      "name": "AmountRow1",
+      "type": "Tx"
+    },
+    {
+      "name": "Percentage allocation to underlying portfoliosRow1",
+      "type": "Tx"
+    },
+    {
+      "name": "Underlying model portfolios  fundsRow1",
+      "type": "Tx"
+    },
+    {
+      "name": "the following implications and accept the associated risks",
+      "type": "Tx"
+    },
+    {
+      "name": "Check Box5",
+      "type": "checkbox"
+    },
+    {
+      "name": "Check Box6",
+      "type": "checkbox"
+    },
+    {
+      "name": "Text19",
+      "type": "Tx"
+    },
+    {
+      "name": "Text20",
+      "type": "Tx"
+    },
+    {
+      "name": "1",
+      "type": "Tx"
+    },
+    {
+      "name": "2",
+      "type": "Tx"
+    },
+    {
+      "name": "3",
+      "type": "Tx"
+    },
+    {
+      "name": "4",
+      "type": "Tx"
+    },
+    {
+      "name": "5",
+      "type": "Tx"
+    },
+    {
+      "name": "6",
+      "type": "Tx"
+    },
+    {
+      "name": "7",
+      "type": "Tx"
+    },
+    {
+      "name": "8",
+      "type": "Tx"
+    },
+    {
+      "name": "10",
+      "type": "Tx"
+    },
+    {
+      "name": "11",
+      "type": "Tx"
+    },
+    {
+      "name": "12",
+      "type": "Tx"
+    },
+    {
+      "name": "13",
+      "type": "Tx"
+    },
+    {
+      "name": "14",
+      "type": "Tx"
+    },
+    {
+      "name": "15",
+      "type": "Tx"
+    },
+    {
+      "name": "16",
+      "type": "Tx"
+    },
+    {
+      "name": "17",
+      "type": "Tx"
+    },
+    {
+      "name": "18",
+      "type": "Tx"
+    },
+    {
+      "name": "19",
+      "type": "Tx"
+    },
+    {
+      "name": "20",
+      "type": "Tx"
+    },
+    {
+      "name": "21",
+      "type": "Tx"
+    },
+    {
+      "name": "22",
+      "type": "Tx"
+    },
+    {
+      "name": "23",
+      "type": "Tx"
+    },
+    {
+      "name": "24",
+      "type": "Tx"
+    },
+    {
+      "name": "25",
+      "type": "Tx"
+    },
+    {
+      "name": "26",
+      "type": "Tx"
+    },
+    {
+      "name": "30",
+      "type": "Tx"
+    },
+    {
+      "name": "31",
+      "type": "Tx"
+    },
+    {
+      "name": "32",
+      "type": "Tx"
+    },
+    {
+      "name": "27",
+      "type": "Tx"
+    },
+    {
+      "name": "28",
+      "type": "Tx"
+    },
+    {
+      "name": "40",
+      "type": "Tx"
+    },
+    {
+      "name": "Adviser signature",
+      "type": "Sig"
+    },
+    {
+      "name": "Client signature",
+      "type": "Sig"
+    },
+    {
+      "name": "Text1",
+      "type": "Tx"
+    },
+    {
+      "name": "Text2",
+      "type": "Tx"
+    },
+    {
+      "name": "Text3",
+      "type": "Tx"
+    },
+    {
+      "name": "Text4",
+      "type": "Tx"
+    },
+    {
+      "name": "client_full_name",
+      "type": "Tx"
+    },
+    {
+      "name": "adviser_name",
+      "type": "Tx"
+    },
+    {
+      "name": "products_considered_investment_portfolio",
+      "type": "checkbox"
+    },
+    {
+      "name": "products_considered_tfsa",
+      "type": "checkbox"
+    },
+    {
+      "name": "products_considered_local_and_global_share_portfolio",
+      "type": "checkbox"
+    },
+    {
+      "name": "products_considered_ccm",
+      "type": "checkbox"
+    },
+    {
+      "name": "products_considered_structured_products",
+      "type": "checkbox"
+    },
+    {
+      "name": "products_considered_endowment_sinking_funds",
+      "type": "checkbox"
+    },
+    {
+      "name": "products_considered_ra",
+      "type": "checkbox"
+    },
+    {
+      "name": "products_considered_pension_fund",
+      "type": "checkbox"
+    },
+    {
+      "name": "products_considered_provident_fund",
+      "type": "checkbox"
+    },
+    {
+      "name": "products_considered_preservation_fund",
+      "type": "checkbox"
+    },
+    {
+      "name": "products_considered_living_annuity",
+      "type": "checkbox"
+    },
+    {
+      "name": "products_considered_life_annuity",
+      "type": "checkbox"
+    }
+  ]
+}

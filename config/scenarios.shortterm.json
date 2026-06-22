@@ -1,0 +1,64 @@
+{
+  "line": "Short Term",
+  "scenarios": [
+    {
+      "id": "st_new_client_new_product",
+      "name": "New client – new product",
+      "documents": [
+        { "doc": "disclosure_letter", "status": "required", "type": "collect" },
+        { "doc": "broker_appointment", "status": "required", "type": "generate" },
+        { "doc": "fica_id_proof", "status": "required", "type": "collect" },
+        { "doc": "comparative_quotes", "status": "required", "type": "collect" },
+        { "doc": "shortterm_advice_agreement", "status": "required", "type": "collect", "note": "Per confirmation email" },
+        { "doc": "transaction_register", "status": "required", "type": "collect" }
+      ]
+    },
+    {
+      "id": "st_new_client_takeover",
+      "name": "New client – take over existing products (broker appointment)",
+      "documents": [
+        { "doc": "disclosure_letter", "status": "required", "type": "collect" },
+        { "doc": "broker_appointment", "status": "required", "type": "generate" },
+        { "doc": "fica_id_proof", "status": "required", "type": "collect" },
+        { "doc": "product_review_declaration", "status": "required", "type": "collect", "note": "Per email" },
+        { "doc": "transaction_register", "status": "required", "type": "collect" }
+      ]
+    },
+    {
+      "id": "st_existing_new_product",
+      "name": "Existing client – new short-term product",
+      "documents": [
+        { "doc": "broker_appointment", "status": "required", "type": "generate" },
+        { "doc": "fica_id_proof", "status": "required", "type": "collect" },
+        { "doc": "comparative_quotes", "status": "required", "type": "collect" },
+        { "doc": "shortterm_advice_agreement", "status": "required", "type": "collect", "note": "Per confirmation email" },
+        { "doc": "transaction_register", "status": "required", "type": "collect" }
+      ]
+    },
+    {
+      "id": "st_existing_takeover",
+      "name": "Existing client – take over existing short-term (broker appointment)",
+      "documents": [
+        { "doc": "broker_appointment", "status": "required", "type": "generate" },
+        { "doc": "fica_id_proof", "status": "required", "type": "collect" },
+        { "doc": "product_review_declaration", "status": "required", "type": "collect", "note": "Per email" },
+        { "doc": "transaction_register", "status": "required", "type": "collect" }
+      ]
+    },
+    {
+      "id": "st_existing_amendments",
+      "name": "Existing cover amendments – adding / removal of item(s)",
+      "documents": [
+        { "doc": "client_instruction_confirmation", "status": "required", "type": "collect" }
+      ]
+    },
+    {
+      "id": "st_annual_review",
+      "name": "Annual review",
+      "documents": [
+        { "doc": "annual_review_letter", "status": "required", "type": "collect" },
+        { "doc": "client_instruction_confirmation", "status": "required", "type": "collect", "note": "Client instruction + email confirmation (incl. new & renewal letter and policy schedule), 30 days before renewal date" }
+      ]
+    }
+  ]
+}

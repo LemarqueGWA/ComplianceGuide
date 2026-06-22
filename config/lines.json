@@ -1,0 +1,6 @@
+[
+  { "id": "investment", "name": "Investment", "file": "config/scenarios.investment.json" },
+  { "id": "longterm", "name": "Long Term Insurance", "file": "config/scenarios.longterm.json" },
+  { "id": "medical", "name": "Medical and GAP", "file": "config/scenarios.medical.json" },
+  { "id": "shortterm", "name": "Short Term", "file": "config/scenarios.shortterm.json" }
+]

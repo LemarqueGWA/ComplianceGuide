@@ -5,70 +5,317 @@
       "id": "new_client_new_product",
       "name": "New client – new product",
       "documents": [
-        { "doc": "broker_appointment", "status": "required", "type": "generate" },
-        { "doc": "gwa_mandate", "status": "required", "type": "generate" },
-        { "doc": "client_service_request", "status": "required", "type": "generate" },
-        { "doc": "cdd_form", "status": "required", "type": "generate" },
-        { "doc": "suitability_questionnaire", "status": "required", "type": "generate" },
-        { "doc": "profile_confirmation", "status": "required", "type": "generate" },
-        { "doc": "portfolio_allocation", "status": "required", "type": "generate" },
-        { "doc": "advice_agreement", "status": "required", "type": "generate" },
-        { "doc": "fica_id_proof", "status": "required", "type": "collect" },
-        { "doc": "easefica_risk_rating", "status": "required", "type": "collect" },
-        { "doc": "pep_screening", "status": "required", "type": "collect" }
+        {
+          "doc": "disclosure_letter",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "gwa_mandate",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "client_service_request",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "cdd_form",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "suitability_questionnaire",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "investment_proposal",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "portfolio_allocation",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "advice_agreement",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "easefica_risk_rating",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "asisa_replacement",
+          "status": "conditional",
+          "type": "collect",
+          "note": "If applicable – replacement of an existing product"
+        }
       ]
     },
     {
       "id": "new_client_appointment_only",
       "name": "New client – appointment only",
       "documents": [
-        { "doc": "broker_appointment", "status": "required", "type": "generate" },
-        { "doc": "gwa_mandate", "status": "required", "type": "generate" },
-        { "doc": "client_service_request", "status": "required", "type": "generate" },
-        { "doc": "cdd_form", "status": "required", "type": "generate" },
-        { "doc": "fica_id_proof", "status": "required", "type": "collect" },
-        { "doc": "easefica_risk_rating", "status": "required", "type": "collect" },
-        { "doc": "pep_screening", "status": "required", "type": "collect" }
+        {
+          "doc": "disclosure_letter",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "broker_appointment",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "gwa_mandate",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "client_service_request",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "cdd_form",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "suitability_questionnaire",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "portfolio_allocation",
+          "status": "conditional",
+          "type": "generate",
+          "note": "Discretionary"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "easefica_risk_rating",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "product_review_declaration",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "existing_client_add_product",
       "name": "Existing client – add new product",
       "documents": [
-        { "doc": "client_service_request", "status": "required", "type": "generate" },
-        { "doc": "cdd_form_existing", "status": "required", "type": "generate" },
-        { "doc": "gwa_mandate", "status": "conditional", "type": "generate", "note": "Only if no existing signed mandate on file" },
-        { "doc": "suitability_questionnaire", "status": "required", "type": "generate" },
-        { "doc": "profile_confirmation", "status": "required", "type": "generate" },
-        { "doc": "portfolio_allocation", "status": "required", "type": "generate" },
-        { "doc": "advice_agreement", "status": "required", "type": "generate" },
-        { "doc": "easefica_risk_rating", "status": "required", "type": "collect" }
+        {
+          "doc": "gwa_mandate",
+          "status": "conditional",
+          "type": "generate",
+          "note": "Only if no existing signed mandate on file"
+        },
+        {
+          "doc": "client_service_request",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "cdd_form_existing",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "suitability_questionnaire",
+          "status": "conditional",
+          "type": "generate",
+          "note": "Only if existing risk profile is not already on file"
+        },
+        {
+          "doc": "investment_proposal",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "portfolio_allocation",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "advice_agreement",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "conditional",
+          "type": "collect",
+          "note": "Only if the details changed"
+        },
+        {
+          "doc": "easefica_risk_rating",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "conditional",
+          "type": "collect",
+          "note": "Only if existing PEP screening is older than 12 months"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "asisa_replacement",
+          "status": "conditional",
+          "type": "collect",
+          "note": "If applicable – replacement of an existing product"
+        }
       ]
     },
     {
       "id": "existing_client_appointment_new_product",
       "name": "Existing client – appointment on new product",
       "documents": [
-        { "doc": "broker_appointment", "status": "required", "type": "generate" },
-        { "doc": "cdd_form_existing", "status": "required", "type": "generate" },
-        { "doc": "gwa_mandate", "status": "conditional", "type": "generate", "note": "Only if no existing signed mandate on file" },
-        { "doc": "suitability_questionnaire", "status": "required", "type": "generate" },
-        { "doc": "profile_confirmation", "status": "required", "type": "generate" },
-        { "doc": "portfolio_allocation", "status": "required", "type": "generate" },
-        { "doc": "advice_agreement", "status": "required", "type": "generate" },
-        { "doc": "easefica_risk_rating", "status": "required", "type": "collect" }
+        {
+          "doc": "broker_appointment",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "gwa_mandate",
+          "status": "conditional",
+          "type": "generate",
+          "note": "Only if no existing signed mandate on file"
+        },
+        {
+          "doc": "cdd_form_existing",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "suitability_questionnaire",
+          "status": "conditional",
+          "type": "generate",
+          "note": "Only if existing risk profile is not already on file"
+        },
+        {
+          "doc": "portfolio_allocation",
+          "status": "conditional",
+          "type": "generate",
+          "note": "Discretionary"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "conditional",
+          "type": "collect",
+          "note": "Only if the details changed"
+        },
+        {
+          "doc": "easefica_risk_rating",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "conditional",
+          "type": "collect",
+          "note": "Only if existing PEP screening is older than 12 months"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "product_review_declaration",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "annual_portfolio_review",
       "name": "Annual portfolio review",
       "documents": [
-        { "doc": "cdd_form_existing", "status": "conditional", "type": "generate", "note": "Only if client details changed" },
-        { "doc": "suitability_questionnaire", "status": "required", "type": "generate" },
-        { "doc": "profile_confirmation", "status": "required", "type": "generate" },
-        { "doc": "portfolio_allocation", "status": "required", "type": "generate" },
-        { "doc": "advice_agreement", "status": "required", "type": "generate" },
-        { "doc": "pep_screening", "status": "conditional", "type": "collect", "note": "Only if existing PEP screening is older than 12 months" }
+        {
+          "doc": "gwa_mandate",
+          "status": "conditional",
+          "type": "generate",
+          "note": "Only if no existing signed mandate on file"
+        },
+        {
+          "doc": "cdd_form",
+          "status": "conditional",
+          "type": "generate",
+          "note": "Only if existing PEP screening is older than 12 months"
+        },
+        {
+          "doc": "suitability_questionnaire",
+          "status": "conditional",
+          "type": "generate",
+          "note": "Only if risk profile changed"
+        },
+        {
+          "doc": "portfolio_allocation",
+          "status": "conditional",
+          "type": "generate",
+          "note": "Discretionary"
+        },
+        {
+          "doc": "profile_confirmation",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "conditional",
+          "type": "collect",
+          "note": "Only if the details changed"
+        },
+        {
+          "doc": "product_review_declaration",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     }
   ]
