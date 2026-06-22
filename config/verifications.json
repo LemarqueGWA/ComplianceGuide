@@ -2,15 +2,15 @@
   {
     "id": "easefica_report",
     "label": "EaseFICA risk-rating report",
-    "url": "https://REPLACE-WITH-EASEFICA-URL",
+    "url": "https://admin.easefica.co.za",
     "accept": "application/pdf",
     "kind": "PDF report",
     "docs": ["easefica_risk_rating"]
   },
   {
     "id": "screening_shot",
-    "label": "PEP / sanctions screening",
-    "url": "https://REPLACE-WITH-SCREENING-URL",
+    "label": "Dilisense PEP / sanctions screening",
+    "url": "https://dilisense.com/en",
     "accept": "image/*",
     "kind": "screenshot",
     "docs": ["pep_screening", "fic_tfs_screenshot"]
