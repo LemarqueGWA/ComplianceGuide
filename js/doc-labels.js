@@ -26,4 +26,14 @@ export const DOC_LABELS = {
   longterm_advice_agreement: 'Long-term Advice Agreement',
   existing_longterm_advice_agreement: 'Existing Long-term Product Advice Agreement',
   risk_product_review_declaration: 'Risk Product Review Declaration',
+  // Medical and GAP line
+  fic_tfs_screenshot: 'FIC (TFS List) Screenshot',
+  get_quote: 'Get Quote (attach to Advice Agreement)',
+  medical_gap_advice_agreement: 'Advice Agreement – Medical & Gap',
+  notify_medical_aid_plan_change: 'Notify medical aid clients of annual plan change (Mailchimp)',
+  // Short Term line
+  comparative_quotes: 'Comparative Quotes (via email)',
+  shortterm_advice_agreement: 'Advice Agreement – Short Term',
+  annual_review_letter: 'Annual Review Letter / Notification',
+  client_instruction_confirmation: 'Client Instruction & Email Confirmation',
 };
