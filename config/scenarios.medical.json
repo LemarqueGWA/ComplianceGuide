@@ -5,64 +5,191 @@
       "id": "med_new_client_new_product",
       "name": "New client – new product",
       "documents": [
-        { "doc": "disclosure_letter", "status": "required", "type": "collect" },
-        { "doc": "letter_of_authority", "status": "required", "type": "collect" },
-        { "doc": "client_service_request", "status": "required", "type": "generate" },
-        { "doc": "fica_id_proof", "status": "required", "type": "collect" },
-        { "doc": "fic_tfs_screenshot", "status": "required", "type": "collect" },
-        { "doc": "pep_screening", "status": "required", "type": "collect" },
-        { "doc": "get_quote", "status": "required", "type": "collect" },
-        { "doc": "medical_gap_advice_agreement", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "required", "type": "collect" }
+        {
+          "doc": "disclosure_letter",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "broker_appointment",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "client_service_request",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "fic_tfs_screenshot",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "get_quote",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "medical_gap_advice_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "med_new_client_takeover",
       "name": "New client – take over existing products (broker appointment)",
       "documents": [
-        { "doc": "disclosure_letter", "status": "required", "type": "collect" },
-        { "doc": "letter_of_authority", "status": "required", "type": "collect" },
-        { "doc": "broker_appointment", "status": "required", "type": "generate" },
-        { "doc": "client_service_request", "status": "required", "type": "generate" },
-        { "doc": "fica_id_proof", "status": "required", "type": "collect" },
-        { "doc": "fic_tfs_screenshot", "status": "required", "type": "collect" },
-        { "doc": "pep_screening", "status": "required", "type": "collect" },
-        { "doc": "product_review_declaration", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "required", "type": "collect" }
+        {
+          "doc": "disclosure_letter",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "broker_appointment",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "client_service_request",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "fic_tfs_screenshot",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "product_review_declaration",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "med_existing_new_medical_gap",
       "name": "Existing client – new medical aid / gap",
       "documents": [
-        { "doc": "letter_of_authority", "status": "required", "type": "collect" },
-        { "doc": "client_service_request", "status": "required", "type": "generate" },
-        { "doc": "fic_tfs_screenshot", "status": "required", "type": "collect" },
-        { "doc": "pep_screening", "status": "required", "type": "collect" },
-        { "doc": "get_quote", "status": "required", "type": "collect" },
-        { "doc": "medical_gap_advice_agreement", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "required", "type": "collect" }
+        {
+          "doc": "broker_appointment",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "client_service_request",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fic_tfs_screenshot",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "get_quote",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "medical_gap_advice_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "med_existing_takeover",
       "name": "Existing client – take over existing medical aid / gap (broker appointment)",
       "documents": [
-        { "doc": "letter_of_authority", "status": "required", "type": "collect" },
-        { "doc": "broker_appointment", "status": "required", "type": "generate" },
-        { "doc": "client_service_request", "status": "required", "type": "generate" },
-        { "doc": "fic_tfs_screenshot", "status": "required", "type": "collect" },
-        { "doc": "pep_screening", "status": "required", "type": "collect" },
-        { "doc": "product_review_declaration", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "required", "type": "collect" }
+        {
+          "doc": "broker_appointment",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "client_service_request",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fic_tfs_screenshot",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "product_review_declaration",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "med_annual_plan_change_review",
       "name": "Annual plan changes review",
       "documents": [
-        { "doc": "medical_gap_advice_agreement", "status": "conditional", "type": "collect", "note": "Only if plan changes were made – client instruction / minutes + email confirmation with screenshot" },
-        { "doc": "notify_medical_aid_plan_change", "status": "required", "type": "collect" }
+        {
+          "doc": "medical_gap_advice_agreement",
+          "status": "conditional",
+          "type": "collect",
+          "note": "Only if plan changes were made – client instruction / minutes + email confirmation with screenshot"
+        },
+        {
+          "doc": "notify_medical_aid_plan_change",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     }
   ]

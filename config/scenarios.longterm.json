@@ -5,107 +5,309 @@
       "id": "lti_new_client_new_product",
       "name": "New client – new product",
       "documents": [
-        { "doc": "disclosure_letter", "status": "required", "type": "collect" },
-        { "doc": "letter_of_authority", "status": "required", "type": "collect" },
-        { "doc": "client_service_agreement", "status": "required", "type": "collect" },
-        { "doc": "cdd_form", "status": "required", "type": "generate" },
-        { "doc": "fica_id_proof", "status": "required", "type": "collect" },
-        { "doc": "easefica_risk_rating", "status": "required", "type": "collect" },
-        { "doc": "pep_screening", "status": "required", "type": "collect" },
-        { "doc": "rar", "status": "conditional", "type": "collect", "note": "If applicable" },
-        { "doc": "longterm_advice_agreement", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "required", "type": "collect" }
+        {
+          "doc": "disclosure_letter",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "broker_appointment",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "client_service_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "cdd_form",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "easefica_risk_rating",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "rar",
+          "status": "conditional",
+          "type": "collect",
+          "note": "If applicable"
+        },
+        {
+          "doc": "longterm_advice_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "lti_new_client_takeover",
       "name": "New client – take over existing products (broker appointment)",
       "documents": [
-        { "doc": "disclosure_letter", "status": "required", "type": "collect" },
-        { "doc": "letter_of_authority", "status": "required", "type": "collect" },
-        { "doc": "broker_appointment", "status": "required", "type": "generate" },
-        { "doc": "client_service_agreement", "status": "required", "type": "collect" },
-        { "doc": "cdd_form", "status": "required", "type": "generate" },
-        { "doc": "fica_id_proof", "status": "required", "type": "collect" },
-        { "doc": "easefica_risk_rating", "status": "required", "type": "collect" },
-        { "doc": "pep_screening", "status": "required", "type": "collect" },
-        { "doc": "risk_product_review_declaration", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "required", "type": "collect" }
+        {
+          "doc": "disclosure_letter",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "broker_appointment",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "client_service_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "cdd_form",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "easefica_risk_rating",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "risk_product_review_declaration",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "lti_existing_new_product_no_cover",
       "name": "Existing client – new product (no existing life cover)",
       "documents": [
-        { "doc": "client_service_agreement", "status": "required", "type": "collect" },
-        { "doc": "cdd_form_existing", "status": "required", "type": "generate" },
-        { "doc": "fica_id_proof", "status": "conditional", "type": "collect", "note": "Only if the details changed" },
-        { "doc": "easefica_risk_rating", "status": "required", "type": "collect" },
-        { "doc": "pep_screening", "status": "required", "type": "collect" },
-        { "doc": "longterm_advice_agreement", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "required", "type": "collect" }
+        {
+          "doc": "client_service_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "cdd_form_existing",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "conditional",
+          "type": "collect",
+          "note": "Only if the details changed"
+        },
+        {
+          "doc": "easefica_risk_rating",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "longterm_advice_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "lti_existing_new_product_replace",
       "name": "Existing client – new product (replace existing life cover)",
       "documents": [
-        { "doc": "letter_of_authority", "status": "required", "type": "collect" },
-        { "doc": "broker_appointment", "status": "conditional", "type": "generate", "note": "If applicable" },
-        { "doc": "client_service_agreement", "status": "required", "type": "collect" },
-        { "doc": "cdd_form_existing", "status": "required", "type": "generate" },
-        { "doc": "fica_id_proof", "status": "conditional", "type": "collect", "note": "Only if the details changed" },
-        { "doc": "easefica_risk_rating", "status": "required", "type": "collect" },
-        { "doc": "pep_screening", "status": "required", "type": "collect" },
-        { "doc": "rar", "status": "required", "type": "collect" },
-        { "doc": "longterm_advice_agreement", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "required", "type": "collect" }
+        {
+          "doc": "broker_appointment",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "client_service_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "cdd_form_existing",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "conditional",
+          "type": "collect",
+          "note": "Only if the details changed"
+        },
+        {
+          "doc": "easefica_risk_rating",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "rar",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "longterm_advice_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "lti_existing_takeover",
       "name": "Existing client – take over existing product (broker appointment)",
       "documents": [
-        { "doc": "letter_of_authority", "status": "required", "type": "collect" },
-        { "doc": "broker_appointment", "status": "required", "type": "generate" },
-        { "doc": "client_service_agreement", "status": "required", "type": "collect" },
-        { "doc": "cdd_form_existing", "status": "required", "type": "generate" },
-        { "doc": "fica_id_proof", "status": "conditional", "type": "collect", "note": "Only if the details changed" },
-        { "doc": "easefica_risk_rating", "status": "required", "type": "collect" },
-        { "doc": "pep_screening", "status": "required", "type": "collect" },
-        { "doc": "risk_product_review_declaration", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "required", "type": "collect" }
+        {
+          "doc": "broker_appointment",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "client_service_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "cdd_form_existing",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "fica_id_proof",
+          "status": "conditional",
+          "type": "collect",
+          "note": "Only if the details changed"
+        },
+        {
+          "doc": "easefica_risk_rating",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "pep_screening",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "risk_product_review_declaration",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "lti_existing_increase_benefits",
       "name": "Existing client with existing cover – increase benefits",
       "documents": [
-        { "doc": "existing_longterm_advice_agreement", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "required", "type": "collect" }
+        {
+          "doc": "existing_longterm_advice_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "lti_existing_add_benefit",
       "name": "Existing client with existing cover – add benefit",
       "documents": [
-        { "doc": "existing_longterm_advice_agreement", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "required", "type": "collect" }
+        {
+          "doc": "existing_longterm_advice_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     },
     {
       "id": "lti_existing_reduce_benefit",
       "name": "Existing client with existing cover – reduce or remove benefit",
       "documents": [
-        { "doc": "existing_longterm_advice_agreement", "status": "required", "type": "collect" },
-        { "doc": "transaction_register", "status": "conditional", "type": "collect", "note": "Optional" }
+        {
+          "doc": "existing_longterm_advice_agreement",
+          "status": "required",
+          "type": "collect"
+        },
+        {
+          "doc": "transaction_register",
+          "status": "conditional",
+          "type": "collect",
+          "note": "Optional"
+        }
       ]
     },
     {
       "id": "lti_annual_review",
       "name": "Annual review – existing cover",
       "documents": [
-        { "doc": "risk_product_review_declaration", "status": "required", "type": "collect" }
+        {
+          "doc": "risk_product_review_declaration",
+          "status": "required",
+          "type": "collect"
+        }
       ]
     }
   ]
