@@ -30,6 +30,7 @@ export const DOC_LABELS = {
   fic_tfs_screenshot: 'FIC (TFS List) Screenshot',
   get_quote: 'Get Quote (attach to Advice Agreement)',
   medical_gap_advice_agreement: 'Advice Agreement – Medical & Gap',
+  medical_gap_roa: 'Record of Advice — GAP & Medical Aid',
   notify_medical_aid_plan_change: 'Notify medical aid clients of annual plan change (Mailchimp)',
   // Short Term line
   comparative_quotes: 'Comparative Quotes (via email)',

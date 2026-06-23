@@ -114,6 +114,50 @@ const INVEST_GROUPS = [
       ['proposed_investment_fully_offshore', 'Fully Offshore'],
     ] },
 ];
+// Document-specific layouts that mirror the printed template's flow. When a doc
+// id has an entry here, renderDocBody uses it verbatim instead of the generic
+// field list. Block kinds: 'heading' (text), 'fields' (named text inputs),
+// 'ynTable' (label + Yes/No checkbox-pair rows), 'ynGrid' (N-column cells, each
+// a label with a Yes/No pair). yes/no are the AcroForm checkbox field names.
+const DOC_LAYOUTS = {
+  medical_gap_roa: [
+    { kind: 'fields', names: ['client_full_name'] },
+    { kind: 'ynTable', rows: [
+      { label: 'Medical aid advice', yes: 'medical_aid_advice_yes', no: 'medical_aid_advice_no' },
+      { label: 'GAP Cover advice', yes: 'gap_cover_advice_yes', no: 'gap_cover_advice_no' },
+    ] },
+    { kind: 'heading', text: 'Medical needs analysis & record of advice' },
+    { kind: 'ynTable', rows: [
+      { label: 'Have GAP Cover products been discussed?', yes: 'gap_cover_discussed_yes', no: 'gap_cover_discussed_no' },
+    ] },
+    { kind: 'fields', names: ['proposed_gap_cover_provider'] },
+    { kind: 'ynTable', rows: [
+      { label: 'Is this a replacement of an existing GAP cover policy?', yes: 'gap_cover_replacement_yes', no: 'gap_cover_replacement_no' },
+    ] },
+    { kind: 'fields', names: ['current_medical_scheme', 'current_medical_scheme_option'] },
+    { kind: 'heading', text: 'Recommended scheme rules' },
+    { kind: 'ynGrid', cols: 4, items: [
+      { label: '100% of fund tariffs', yes: 'scheme_100percent_yes', no: 'scheme_100percent_no' },
+      { label: '200% of fund tariffs', yes: 'scheme_200percent_yes', no: 'scheme_200percent_no' },
+      { label: 'Procedures Co-Payment', yes: 'scheme_procedure_co_pay_yes', no: 'scheme_procedure_co_pay_no' },
+      { label: 'Medical GAP cover member', yes: 'scheme_medical_aid_cgap_member_yes', no: 'scheme_medical_aid_cgap_member_no' },
+      { label: 'Casualty Benefits', yes: 'scheme_casualty_benefits_yes', no: 'scheme_casualty_benefits_no' },
+      { label: 'MRI/CT scans', yes: 'scheme_mri_ct_scans_yes', no: 'scheme_mri_ct_scans_no' },
+      { label: 'Network Scheme', yes: 'scheme_network_yes', no: 'scheme_network_no' },
+      { label: 'Dentistry', yes: 'scheme_dentistry_yes', no: 'scheme_dentistry_no' },
+    ] },
+    { kind: 'heading', text: 'Day-to-day benefits' },
+    { kind: 'ynTable', rows: [
+      { label: 'Does the client require any Day-to-Day benefits?', yes: 'client_requires_day_to_day_benefits_yes', no: 'client_requires_day_to_day_benefits_no' },
+    ] },
+    { kind: 'heading', text: 'Replacement of current medical scheme (if applicable)' },
+    { kind: 'ynTable', rows: [
+      { label: 'Is this a replacement of your current scheme?', yes: 'replacement_of_current_medical_scheme_yes', no: 'replacement_of_current_medical_scheme_no' },
+    ] },
+    { kind: 'heading', text: 'Recommendation' },
+    { kind: 'fields', names: ['recommendation_1', 'recommended_medical_scheme_benefit_plan'] },
+  ],
+};
 function claimedNames(fields) {
   const s = new Set();
   for (const g of CHECK_GRID_GROUPS) for (const n of g.members) if (fields.has(n)) s.add(n);
@@ -541,7 +585,78 @@ export function initDashboard(opts) {
     return n;
   }
 
+  // checkbox input bound to state, for the Yes/No table & grid layouts
+  function ynBox(name) {
+    const inp = document.createElement('input'); inp.type = 'checkbox'; inp.dataset.field = name;
+    inp.checked = state.values[name] === 'Yes' || state.values[name] === true;
+    inp.addEventListener('change', () => { state.values[name] = inp.checked ? 'Yes' : ''; syncField(name); refresh(); });
+    return inp;
+  }
+  // append a revealed text field after `host` if `checkboxName` controls one
+  function appendReveal(host, doc, checkboxName, controllingInput) {
+    const dn = doc.reveals[checkboxName];
+    if (!dn || !doc.fields.has(dn)) return;
+    const { row } = fieldRow(doc.fields.get(dn));
+    row.classList.add('revealed'); row.hidden = !controllingInput.checked;
+    host.appendChild(row);
+    controllingInput.addEventListener('change', () => { row.hidden = !controllingInput.checked; });
+  }
+
+  // render a document using its declarative layout (mirrors the printed form)
+  function renderDocLayout(body, doc, layout) {
+    for (const block of layout) {
+      if (block.kind === 'heading') {
+        const h = document.createElement('h4'); h.textContent = block.text; body.appendChild(h);
+      } else if (block.kind === 'fields') {
+        const fg = document.createElement('div'); fg.className = 'fieldgrid';
+        let any = false;
+        for (const name of block.names) {
+          if (!doc.fields.has(name)) continue;
+          const { row } = fieldRow(doc.fields.get(name));
+          if (isWideField(name)) row.classList.add('span2');
+          fg.appendChild(row); any = true;
+        }
+        if (any) body.appendChild(fg);
+      } else if (block.kind === 'ynTable') {
+        const rows = block.rows.filter((r) => doc.fields.has(r.yes) || doc.fields.has(r.no));
+        if (!rows.length) continue;
+        const tbl = document.createElement('table'); tbl.className = 'yn-table';
+        const thead = document.createElement('thead');
+        thead.innerHTML = '<tr><th></th><th>Yes</th><th>No</th></tr>';
+        tbl.appendChild(thead);
+        const tb = document.createElement('tbody');
+        const yesInputs = [];
+        for (const r of rows) {
+          const tr = document.createElement('tr');
+          const tdL = document.createElement('td'); tdL.className = 'lbl'; tdL.textContent = r.label; tr.appendChild(tdL);
+          const tdY = document.createElement('td'); tdY.className = 'opt';
+          const yIn = ynBox(r.yes); tdY.appendChild(yIn); tr.appendChild(tdY);
+          const tdN = document.createElement('td'); tdN.className = 'opt'; tdN.appendChild(ynBox(r.no)); tr.appendChild(tdN);
+          tb.appendChild(tr); yesInputs.push([r.yes, yIn]);
+        }
+        tbl.appendChild(tb); body.appendChild(tbl);
+        // attach any revealed field beneath the table (e.g. current insurer)
+        for (const [yesName, yIn] of yesInputs) appendReveal(body, doc, yesName, yIn);
+      } else if (block.kind === 'ynGrid') {
+        const items = block.items.filter((it) => doc.fields.has(it.yes) || doc.fields.has(it.no));
+        if (!items.length) continue;
+        const grid = document.createElement('div'); grid.className = 'yn-grid c' + (block.cols || 4);
+        for (const it of items) {
+          const cell = document.createElement('div'); cell.className = 'yn-cell';
+          const lab = document.createElement('div'); lab.className = 'lbl'; lab.textContent = it.label; cell.appendChild(lab);
+          const opts = document.createElement('div'); opts.className = 'opts';
+          const ly = document.createElement('label'); ly.append('Yes', ynBox(it.yes));
+          const ln = document.createElement('label'); ln.append('No', ynBox(it.no));
+          opts.append(ly, ln); cell.appendChild(opts); grid.appendChild(cell);
+        }
+        body.appendChild(grid);
+      }
+    }
+  }
+
   function renderDocBody(body, doc) {
+    const layout = DOC_LAYOUTS[doc.docId];
+    if (layout) { renderDocLayout(body, doc, layout); return; }
     const controlled = new Set(Object.values(doc.reveals));
     const genericManual = [], genericAuto = [];
     for (const f of doc.fields.values()) {

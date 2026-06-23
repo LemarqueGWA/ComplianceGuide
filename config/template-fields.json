@@ -1164,5 +1164,179 @@
       "name": "products_considered_life_annuity",
       "type": "checkbox"
     }
+  ],
+  "medical_gap_roa": [
+    {
+      "name": "RECOMMENDATION 2",
+      "type": "Tx"
+    },
+    {
+      "name": "RECOMMENDATION 3",
+      "type": "Tx"
+    },
+    {
+      "name": "RECOMMENDATION 4",
+      "type": "Tx"
+    },
+    {
+      "name": "RECOMMENDATION 5",
+      "type": "Tx"
+    },
+    {
+      "name": "Client signature",
+      "type": "Sig"
+    },
+    {
+      "name": "Advisor signature",
+      "type": "Sig"
+    },
+    {
+      "name": "Date",
+      "type": "Tx"
+    },
+    {
+      "name": "Date_2",
+      "type": "Tx"
+    },
+    {
+      "name": "recommendation_1",
+      "type": "Tx"
+    },
+    {
+      "name": "client_full_name",
+      "type": "Tx"
+    },
+    {
+      "name": "proposed_gap_cover_provider",
+      "type": "Tx"
+    },
+    {
+      "name": "current_gap_provider",
+      "type": "Tx"
+    },
+    {
+      "name": "current_medical_scheme",
+      "type": "Tx"
+    },
+    {
+      "name": "current_medical_scheme_option",
+      "type": "Tx"
+    },
+    {
+      "name": "medical_aid_advice_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "medical_aid_advice_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "gap_cover_advice_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "gap_cover_advice_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "gap_cover_discussed_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "gap_cover_discussed_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_100percent_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_100percent_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_200percent_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_200percent_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_procedure_co_pay_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_procedure_co_pay_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_medical_aid_cgap_member_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_medical_aid_cgap_member_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_casualty_benefits_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_casualty_benefits_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_mri_ct_scans_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_mri_ct_scans_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_network_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_network_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_dentistry_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "scheme_dentistry_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "client_requires_day_to_day_benefits_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "client_requires_day_to_day_benefits_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "replacement_of_current_medical_scheme_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "replacement_of_current_medical_scheme_no",
+      "type": "checkbox"
+    },
+    {
+      "name": "recommended_medical_scheme_benefit_plan",
+      "type": "Tx"
+    },
+    {
+      "name": "gap_cover_replacement_yes",
+      "type": "checkbox"
+    },
+    {
+      "name": "gap_cover_replacement_no",
+      "type": "checkbox"
+    }
   ]
 }

@@ -21,6 +21,11 @@
           "type": "generate"
         },
         {
+          "doc": "medical_gap_roa",
+          "status": "required",
+          "type": "generate"
+        },
+        {
           "doc": "fica_id_proof",
           "status": "required",
           "type": "collect"
@@ -109,6 +114,11 @@
         },
         {
           "doc": "client_service_request",
+          "status": "required",
+          "type": "generate"
+        },
+        {
+          "doc": "medical_gap_roa",
           "status": "required",
           "type": "generate"
         },

@@ -50,5 +50,12 @@
   "advice_agreement": {
     "file": "templates/Advice Agreement for Investments.pdf",
     "docType": "AdviceAgreement"
+  },
+  "medical_gap_roa": {
+    "file": "templates/ROA GAP and Medical Aid.pdf",
+    "docType": "MedicalGapRoa",
+    "reveals": {
+      "gap_cover_replacement_yes": "current_gap_provider"
+    }
   }
 }
