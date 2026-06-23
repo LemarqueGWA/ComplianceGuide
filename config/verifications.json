@@ -13,6 +13,14 @@
     "url": "https://dilisense.com/en",
     "accept": "image/*",
     "kind": "screenshot",
-    "docs": ["pep_screening", "fic_tfs_screenshot"]
+    "docs": ["pep_screening"]
+  },
+  {
+    "id": "tfs_screenshot",
+    "label": "FIC Targeted Financial Sanctions (TFS) screening",
+    "url": "https://tfs.fic.gov.za/Pages/Search",
+    "accept": "image/*",
+    "kind": "screenshot",
+    "docs": ["fic_tfs_screenshot"]
   }
 ]
