@@ -82,6 +82,16 @@ export function computeFields(parsed, opts = {}) {
     if (k.endsWith('_dob') || k.endsWith('_date')) r[k] = formatDate(r[k]);
   }
 
+  // email fields: keep only the address itself. The CRM appends annotations
+  // like "(preferred)" and — if a section break is missed — can run trailing
+  // text into the value; extract just the first email token.
+  for (const k of Object.keys(r)) {
+    if (k.endsWith('_email') && r[k]) {
+      const m = String(r[k]).match(/[^\s,;]+@[^\s,;]+\.[A-Za-z]{2,}/);
+      if (m) r[k] = m[0];
+    }
+  }
+
   const ageSrc = parsed.client_dob; // MUST read from parsed (pre-normalisation), not r
   r.client_full_name = [parsed.client_first_names, parsed.client_surname]
     .filter(Boolean).join(' ');

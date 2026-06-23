@@ -64,6 +64,20 @@ test('computeFields adds full name, display name, age', () => {
   assert.equal(r.meta_scenario, '');
 });
 
+test('BANK DETAILS is a section break so the email value does not bleed', () => {
+  const items = ['CONTACT DETAILS', 'Email (Private)', 'marnusvdm@gmail.com (preferred)',
+    'BANK DETAILS', 'Account holder', 'Mr M Van Der Merwe', 'Bank', 'First National Bank'];
+  // raw parse stops accumulating at the BANK DETAILS section header
+  assert.equal(parseClientInfo(items).contact_email, 'marnusvdm@gmail.com (preferred)');
+});
+
+test('computeFields reduces an email field to the bare address', () => {
+  // even with trailing junk, only the email token survives
+  const r = computeFields({ contact_email: 'marnusvdm@gmail.com (preferred), BANK DETAILS, Bank' });
+  assert.equal(r.contact_email, 'marnusvdm@gmail.com');
+  assert.equal(computeFields({ contact_email: 'sample@example.com (preferred)' }).contact_email, 'sample@example.com');
+});
+
 test('formatDate passes ISO and empty through unchanged', () => {
   assert.equal(formatDate('2024-01-01'), '2024-01-01');
   assert.equal(formatDate(''), '');

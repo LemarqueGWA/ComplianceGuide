@@ -5,6 +5,7 @@ export const SECTIONS = {
   'FICA / AML related information: Client': 'fica',
   'FAIS information: Client': 'fais',
   'CONTACT DETAILS': 'contact',
+  'BANK DETAILS': 'bank',
   'WILL DETAILS': 'will',
   'Client reviews': 'review',
 };
