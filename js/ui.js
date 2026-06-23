@@ -126,12 +126,49 @@ function claimedNames(fields) {
 function formatError(name, type, value) {
   const v = (value || '').trim();
   if (!v || type === 'checkbox') return '';
-  if (name.endsWith('_date') && !/^\d{4}-\d{2}-\d{2}$/.test(v)) return 'Use YYYY-MM-DD';
+  // dates now use a native picker — validity is enforced by the input itself
   if (/(^|_)id$/.test(name)) {
     const digits = v.replace(/\D/g, '');
     if (digits.length && digits.length !== 13) return 'SA ID = 13 digits';
   }
   return '';
+}
+
+// Live ZAR formatting for money inputs — "R 1 250 000" per CLAUDE.md §3.3.
+// Strips to whole-rand digits and regroups with spaces; empty stays empty.
+function formatZar(v) {
+  const digits = String(v == null ? '' : v).replace(/[^\d]/g, '');
+  if (!digits) return '';
+  return 'R ' + digits.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+// Date model bridge: the app stores/outputs dates in GWA long form
+// ("23 June 2026"), but a native date input needs ISO "YYYY-MM-DD". Convert
+// at the input boundary so prefilled CRM dates show in the picker and the
+// value written to the PDF stays in house style.
+const _MONTHS_LONG = ['January','February','March','April','May','June',
+  'July','August','September','October','November','December'];
+function dateToISO(v) {
+  v = String(v == null ? '' : v).trim();
+  if (!v) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  let m = v.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);   // 23 June 2026
+  if (m) { const mo = _MONTHS_LONG.findIndex((n) => n.toLowerCase() === m[2].toLowerCase());
+    if (mo >= 0) return `${m[3]}-${String(mo + 1).padStart(2, '0')}-${m[1].padStart(2, '0')}`; }
+  m = v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);               // 23/06/2026
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+  return '';
+}
+function isoToLong(v) {
+  const m = String(v == null ? '' : v).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return v || '';
+  return `${m[3]} ${_MONTHS_LONG[parseInt(m[2], 10) - 1]} ${m[1]}`;
+}
+
+// Long free-text fields that should span the full width of the 2-column grid
+// rather than sit in a narrow cell.
+function isWideField(name) {
+  return /(name|surname|address|email|objective|description|reason|note|detail|comment|restriction)/i.test(name);
 }
 
 export function initDashboard(opts) {
@@ -179,6 +216,7 @@ export function initDashboard(opts) {
         p.textContent = `✓ Parsed: ${state.values.client_display_name || '(name not found)'} — ${Object.keys(state.values).length} fields. Choose a scenario.`;
       }
       if (state.scenario) await renderScenario();
+      else setTab('scenario'); // auto-advance to the next step once parsed
     } catch (err) {
       console.error(err);
       const p = $('parseStatus');
@@ -361,7 +399,7 @@ export function initDashboard(opts) {
     const sel = 'input[data-field="' + (window.CSS && CSS.escape ? CSS.escape(name) : name) + '"]';
     document.querySelectorAll(sel).forEach((i) => {
       if (i.type === 'checkbox') i.checked = v === 'Yes' || v === true;
-      else if (document.activeElement !== i) i.value = v || '';
+      else if (document.activeElement !== i) i.value = i.type === 'date' ? dateToISO(v) : (v || '');
     });
   }
 
@@ -380,14 +418,29 @@ export function initDashboard(opts) {
       row.classList.add('check');
       inp.addEventListener('change', () => { state.values[f.name] = inp.checked ? 'Yes' : ''; syncField(f.name); refresh(); });
     } else {
-      inp = document.createElement('input'); inp.type = 'text'; inp.dataset.field = f.name;
-      inp.value = state.values[f.name] || '';
-      if (f.inputType === 'date') inp.placeholder = 'YYYY-MM-DD';
-      inp.addEventListener('input', () => {
-        state.values[f.name] = inp.value; syncField(f.name);
+      inp = document.createElement('input'); inp.dataset.field = f.name;
+      inp.className = 'inp-' + f.inputType + (isWideField(f.name) ? ' wide' : '');
+      if (f.inputType === 'date') {
+        inp.type = 'date'; // picker holds ISO; state keeps GWA long form
+        inp.value = dateToISO(state.values[f.name]);
+        inp.addEventListener('input', () => { state.values[f.name] = isoToLong(inp.value); syncField(f.name); refresh(); });
+      } else if (f.inputType === 'number') {
+        // money field — live "R 1 250 000" formatting
+        inp.type = 'text'; inp.inputMode = 'numeric';
+        inp.value = formatZar(state.values[f.name]);
+        inp.addEventListener('input', () => {
+          inp.value = formatZar(inp.value);
+          state.values[f.name] = inp.value; syncField(f.name); refresh();
+        });
+      } else {
+        inp.type = 'text';
+        inp.value = state.values[f.name] || '';
+        inp.addEventListener('input', () => { state.values[f.name] = inp.value; syncField(f.name); refresh(); });
+      }
+      // validation surfaces on blur (not while typing) — avoids nagging
+      inp.addEventListener('blur', () => {
         const msg = formatError(f.name, f.type, inp.value);
         err.textContent = msg; row.classList.toggle('invalid', !!msg);
-        refresh();
       });
     }
     row.appendChild(inp); row.appendChild(err);
@@ -495,17 +548,25 @@ export function initDashboard(opts) {
       if (controlled.has(f.name) || state.claimedGlobal.has(f.name)) continue;
       (f.auto ? genericAuto : genericManual).push(f);
     }
-    const addWithReveal = (f) => {
-      const { row, inp } = fieldRow(f); body.appendChild(row);
-      const dn = doc.reveals[f.name];
-      if (dn && doc.fields.has(dn)) {
-        const { row: prow } = fieldRow(doc.fields.get(dn));
-        prow.classList.add('revealed'); prow.hidden = !inp.checked;
-        body.appendChild(prow);
-        inp.addEventListener('change', () => { prow.hidden = !inp.checked; });
+    // Generic manual fields laid out in a 2-column grid. Wide free-text fields
+    // (names, addresses, objectives) and any field with a conditional reveal
+    // span the full width so their revealed sub-field sits directly beneath.
+    if (genericManual.length) {
+      const fg = document.createElement('div'); fg.className = 'fieldgrid';
+      for (const f of genericManual) {
+        const { row, inp } = fieldRow(f);
+        const dn = doc.reveals[f.name];
+        if (isWideField(f.name) || (dn && doc.fields.has(dn))) row.classList.add('span2');
+        fg.appendChild(row);
+        if (dn && doc.fields.has(dn)) {
+          const { row: prow } = fieldRow(doc.fields.get(dn));
+          prow.classList.add('revealed', 'span2'); prow.hidden = !inp.checked;
+          fg.appendChild(prow);
+          inp.addEventListener('change', () => { prow.hidden = !inp.checked; });
+        }
       }
-    };
-    genericManual.forEach(addWithReveal);
+      body.appendChild(fg);
+    }
     if (genericAuto.length) {
       const fold = document.createElement('div'); fold.className = 'autofold';
       const fb = document.createElement('button'); fb.type = 'button';
@@ -529,12 +590,16 @@ export function initDashboard(opts) {
   // one top-level section per active generate document
   function renderFormsDOM() {
     const acc = $('acc'); acc.innerHTML = '';
+    let firstIncomplete = null, firstBox = null;
     for (const doc of state.docs) {
       const out = docManualOutstanding(doc);
       const body = makeSection(acc, doc.title, out ? `${out} to fill` : 'complete');
       renderDocBody(body, doc);
+      const box = body.parentElement;
+      if (!firstBox) firstBox = box;
+      if (out > 0 && !firstIncomplete) firstIncomplete = box;
     }
-    const first = acc.querySelector('.acc'); if (first) first.classList.add('open');
+    const toOpen = firstIncomplete || firstBox; if (toOpen) toOpen.classList.add('open');
   }
 
   // ---------- readiness / summary / gating ----------
