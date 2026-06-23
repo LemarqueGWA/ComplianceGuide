@@ -120,6 +120,12 @@ const INVEST_GROUPS = [
 // 'ynTable' (label + Yes/No checkbox-pair rows), 'ynGrid' (N-column cells, each
 // a label with a Yes/No pair). yes/no are the AcroForm checkbox field names.
 const DOC_LAYOUTS = {
+  broker_appointment: [
+    { kind: 'fields', names: ['acting_on_behalf'] },
+    { kind: 'checkRow', items: ['check_comprehensive_info', 'check_limited_information'] },
+    { kind: 'fields', names: ['limited_info_company1', 'limited_info_company2', 'limited_info_company3', 'limited_info_company4'] },
+    { kind: 'checkRow', items: ['consent_only', 'consent_and_appoint'] },
+  ],
   medical_gap_roa: [
     { kind: 'fields', names: ['client_full_name'] },
     { kind: 'ynTable', rows: [
@@ -212,7 +218,7 @@ function isoToLong(v) {
 // Long free-text fields that should span the full width of the 2-column grid
 // rather than sit in a narrow cell.
 function isWideField(name) {
-  return /(name|surname|address|email|objective|description|reason|note|detail|comment|restriction)/i.test(name);
+  return /(name|surname|address|email|objective|description|reason|note|detail|comment|restriction|behalf)/i.test(name);
 }
 
 export function initDashboard(opts) {
@@ -451,7 +457,7 @@ export function initDashboard(opts) {
     const row = document.createElement('div');
     row.className = 'row' + (f.auto ? ' auto' : '');
     const lab = document.createElement('label'); lab.className = 'fld';
-    lab.innerHTML = (f.label || f.name) + (!f.auto && f.inputType !== 'checkbox' ? '<span class="req" title="to complete">*</span>' : '') +
+    lab.innerHTML = (f.label || f.name) +
       (f.auto ? '<span class="chip chip-crm">CRM</span>' : '');
     row.appendChild(lab);
     const err = document.createElement('div'); err.className = 'err';
@@ -650,7 +656,46 @@ export function initDashboard(opts) {
           opts.append(ly, ln); cell.appendChild(opts); grid.appendChild(cell);
         }
         body.appendChild(grid);
+      } else if (block.kind === 'checkRow') {
+        // related checkboxes side by side on one level
+        const items = block.items.filter((n) => doc.fields.has(n));
+        if (!items.length) continue;
+        const grid = document.createElement('div'); grid.className = 'grid c' + Math.min(items.length, block.cols || 2);
+        for (const n of items) { const { cell } = checkCell(doc.fields.get(n)); grid.appendChild(cell); }
+        body.appendChild(grid);
       }
+    }
+    // Track every field the layout placed, so nothing is silently dropped.
+    const used = new Set();
+    for (const b of layout) {
+      (b.names || []).forEach((n) => used.add(n));
+      (b.items || []).forEach((it) => { if (typeof it === 'string') used.add(it); else { used.add(it.yes); used.add(it.no); } });
+      (b.rows || []).forEach((r) => { used.add(r.yes); used.add(r.no); });
+    }
+    const controlled = new Set(Object.values(doc.reveals)); // reveal targets, shown via appendReveal
+    // Any manual field the layout missed (e.g. CRM didn't supply a normally-auto
+    // field) still renders so it can be completed by hand.
+    const leftoverManual = [...doc.fields.values()].filter((f) =>
+      !f.auto && !used.has(f.name) && !controlled.has(f.name) && !state.claimedGlobal.has(f.name));
+    if (leftoverManual.length) {
+      const fg = document.createElement('div'); fg.className = 'fieldgrid';
+      for (const f of leftoverManual) {
+        const { row } = fieldRow(f);
+        if (isWideField(f.name) || f.inputType === 'checkbox') row.classList.add('span2');
+        fg.appendChild(row);
+      }
+      body.appendChild(fg);
+    }
+    // CRM-filled fields the layout doesn't place stay in the collapsible fold.
+    const leftoverAuto = [...doc.fields.values()].filter((f) => f.auto && !used.has(f.name));
+    if (leftoverAuto.length) {
+      const fold = document.createElement('div'); fold.className = 'autofold';
+      const fb = document.createElement('button'); fb.type = 'button';
+      fb.textContent = `▸ ${leftoverAuto.length} auto-filled field${leftoverAuto.length > 1 ? 's' : ''} from CRM — show`;
+      fb.addEventListener('click', () => fold.classList.toggle('open'));
+      const inner = document.createElement('div'); inner.className = 'auto';
+      leftoverAuto.forEach((f) => { const { row } = fieldRow(f); inner.appendChild(row); });
+      fold.append(fb, inner); body.appendChild(fold);
     }
   }
 
