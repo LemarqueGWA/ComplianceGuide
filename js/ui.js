@@ -71,6 +71,32 @@ const CHECK_GRID_GROUPS = [
     'products_considered_ra', 'products_considered_pension_fund', 'products_considered_provident_fund',
     'products_considered_preservation_fund', 'products_considered_living_annuity', 'products_considered_life_annuity',
   ] },
+  { title: 'Investment Objective', cols: 2, members: [
+    'investment_objective_max_liquidity', 'investment_objective_combination_liquidity_cap_preservation',
+    'investment_objective_capital_preservation', 'investment_objective_combination_liquidity_cap_growth',
+    'investment_objective_capital_growth',
+  ], labels: {
+    investment_objective_max_liquidity: 'Max Liquidity',
+    investment_objective_combination_liquidity_cap_preservation: 'Combination: Liquidity & Capital Preservation',
+    investment_objective_capital_preservation: 'Capital Preservation',
+    investment_objective_combination_liquidity_cap_growth: 'Combination: Liquidity & Capital Growth',
+    investment_objective_capital_growth: 'Capital Growth',
+  } },
+  { title: 'Investment Term', cols: 2, members: [
+    'term_medium_long', 'term_long', 'term_medium', 'term_short',
+  ], labels: {
+    term_medium_long: 'Medium–Long',
+    term_long: 'Long',
+    term_medium: 'Medium',
+    term_short: 'Short',
+  } },
+  { title: 'Risk Profile', cols: 3, members: [
+    'risk_profile_stable', 'risk_profile_balanced', 'risk_profile_aggressive',
+  ], labels: {
+    risk_profile_stable: 'Stable',
+    risk_profile_balanced: 'Balanced',
+    risk_profile_aggressive: 'Aggressive',
+  } },
 ];
 // Investment allocation text fields, each gated behind a master "has portfolio?"
 // toggle and a per-type checkbox (both UI-only). uiFlag/prefix key the UI state.
@@ -384,9 +410,9 @@ export function initDashboard(opts) {
   }
 
   // a compact "label  ☐" checkbox cell for grid layouts
-  function checkCell(f) {
+  function checkCell(f, labelText) {
     const cell = document.createElement('div'); cell.className = 'checkcell';
-    const lab = document.createElement('label'); lab.textContent = f.label || prettyLabel(f.name);
+    const lab = document.createElement('label'); lab.textContent = labelText || f.label || prettyLabel(f.name);
     const inp = document.createElement('input'); inp.type = 'checkbox'; inp.dataset.field = f.name;
     inp.checked = state.values[f.name] === 'Yes' || state.values[f.name] === true;
     inp.addEventListener('change', () => { state.values[f.name] = inp.checked ? 'Yes' : ''; syncField(f.name); refresh(); });
@@ -400,7 +426,7 @@ export function initDashboard(opts) {
     const grid = document.createElement('div'); grid.className = 'grid c' + grp.cols;
     const details = [];
     for (const name of present) {
-      const { cell, inp } = checkCell(doc.fields.get(name));
+      const { cell, inp } = checkCell(doc.fields.get(name), grp.labels && grp.labels[name]);
       grid.appendChild(cell);
       const dn = doc.reveals[name];
       if (dn && doc.fields.has(dn)) {
