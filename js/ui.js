@@ -112,7 +112,7 @@ export function initDashboard(opts) {
   const state = {
     config: null, values: {}, conditional: {}, ui: {}, verify: {},
     templateBytes: {}, docs: [], claimedGlobal: new Set(),
-    currentLine: null, scenario: null, lastZip: null, lastZipName: '',
+    currentLine: null, scenario: null, advisor: '', lastZip: null, lastZipName: '',
   };
   let renderToken = 0;
 
@@ -606,6 +606,12 @@ export function initDashboard(opts) {
         date: state.values.meta_date_generated || '',
       });
       files.push({ name: gwaFilename('Checklist', ref, date), bytes: checklist });
+      // selected adviser's Letter of Introduction & Disclosure
+      if (state.advisor && opts.getDisclosureBytes) {
+        const db = await opts.getDisclosureBytes(state.advisor);
+        if (db) files.push({ name: `GWA_Disclosure_${state.advisor.replace(/\s+/g, '')}_${ref}_${date.getFullYear()}.pdf`, bytes: db });
+        else skipped.push('disclosure_letter (' + state.advisor + ')');
+      }
       // uploaded external verifications (screenshot / PDF report) travel with the pack
       for (const v of applicableVerifications()) {
         const s = state.verify[v.id];
@@ -715,6 +721,15 @@ export function initDashboard(opts) {
       }
       lineSel.addEventListener('change', onLineChange);
       populateScenarios(state.config.lines[0].id);
+      // advisor dropdown (Upload tab) — selected adviser's disclosure goes in the .zip
+      const advSel = $('advisor');
+      if (advSel && state.config.advisors) {
+        const ph = document.createElement('option'); ph.value = ''; ph.textContent = '— select adviser —'; advSel.appendChild(ph);
+        for (const a of state.config.advisors) {
+          const o = document.createElement('option'); o.value = a.name; o.textContent = a.name; advSel.appendChild(o);
+        }
+        advSel.addEventListener('change', () => { state.advisor = advSel.value; if (state.scenario) refresh(); });
+      }
       wireTabs();
       $('crmFile').addEventListener('change', onUpload);
       $('scenario').addEventListener('change', onScenarioChange);

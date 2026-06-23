@@ -3,3 +3,7 @@ node_modules/
 .DS_Store
 # Build artifact — regenerate with: node build-standalone.mjs
 GWA_Dashboard.html
+
+# Advisor disclosure letters — contain staff PII; bundled into the offline build,
+# never committed (repo is public). Build reads them from the local OneDrive sync.
+templates/disclosures/

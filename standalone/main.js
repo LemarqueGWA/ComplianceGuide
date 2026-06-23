@@ -43,5 +43,9 @@ initDashboard({
   loadConfig: async () => window.GWA_CONFIG,
   getTemplateBytes: async (id) => templateBytes[id] || null,
   listFields: async (id) => (window.GWA_TEMPLATE_FIELDS || {})[id] || null,
+  getDisclosureBytes: async (advisorName) => {
+    const b64 = (window.GWA_DISCLOSURES_B64 || {})[advisorName];
+    return b64 ? b64ToBytes(b64) : null;
+  },
   extractItems,
 });

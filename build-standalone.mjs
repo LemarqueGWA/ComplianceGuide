@@ -38,7 +38,17 @@ const templatesCfg = JSON.parse(readText('config/templates.json'));
 const linesCfg = JSON.parse(readText('config/lines.json'));
 const lines = linesCfg.map((l) => ({ id: l.id, name: l.name, scenarios: JSON.parse(readText(l.file)).scenarios }));
 const verifications = JSON.parse(readText('config/verifications.json'));
-const config = { templates: templatesCfg, lines, verifications };
+const advisorsCfg = JSON.parse(readText('config/advisors.json'));
+const config = { templates: templatesCfg, lines, verifications, advisors: advisorsCfg.advisors };
+
+// Advisor disclosure letters (base64), keyed by advisor name. Sourced from the
+// local OneDrive sync (templates/disclosures/, git-ignored — staff PII, repo is
+// public). Skipped silently if a file isn't present.
+const disclosuresB64 = {};
+for (const a of advisorsCfg.advisors) {
+  try { disclosuresB64[a.name] = b64('templates/disclosures/' + a.disclosure_file); }
+  catch { console.warn('  (no disclosure file for ' + a.name + ' — skipped)'); }
+}
 
 const templatesB64 = {};
 for (const [id, t] of Object.entries(templatesCfg)) {
@@ -92,6 +102,8 @@ ${css}
     <div class="card">
       <h2>Upload Client Information Summary</h2>
       <p class="hint">Choose the machine-generated CRM Client Information Summary PDF. All processing stays on this device.</p>
+      <label class="fld" for="advisor">Adviser</label>
+      <select id="advisor" style="margin-bottom:16px"></select>
       <label class="filedrop" for="crmFile">
         <span class="filedrop-icon">↑</span>
         <span>Choose the CRM Client Information Summary PDF</span>
@@ -157,6 +169,7 @@ ${css}
 <script>${jszipUmd}</script>
 <script>
 window.GWA_CONFIG = ${JSON.stringify(config)};
+window.GWA_DISCLOSURES_B64 = ${JSON.stringify(disclosuresB64)};
 window.GWA_TEMPLATE_FIELDS = ${JSON.stringify(templateFields)};
 window.GWA_TEMPLATES_B64 = ${JSON.stringify(templatesB64)};
 window.GWA_PDF_WORKER_B64 = ${JSON.stringify(workerB64)};

@@ -20,23 +20,36 @@ async function extractItems(arrayBuffer) {
 }
 
 let TEMPLATE_FIELDS = {};
+let ADVISORS = [];
 
 initDashboard({
   loadConfig: async () => {
-    const [templates, linesReg, fields, verifications] = await Promise.all([
+    const [templates, linesReg, fields, verifications, advisorsCfg] = await Promise.all([
       fetch('config/templates.json').then((r) => r.json()),
       fetch('config/lines.json').then((r) => r.json()),
       // pre-extracted at build time; optional in dev (falls back to in-browser parse)
       fetch('config/template-fields.json').then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
       fetch('config/verifications.json').then((r) => (r.ok ? r.json() : [])).catch(() => ([])),
+      fetch('config/advisors.json').then((r) => (r.ok ? r.json() : { advisors: [] })).catch(() => ({ advisors: [] })),
     ]);
     const lines = await Promise.all(linesReg.map(async (l) => ({
       id: l.id, name: l.name, scenarios: (await fetch(l.file).then((r) => r.json())).scenarios,
     })));
     TEMPLATE_FIELDS = fields || {};
-    return { templates, lines, verifications };
+    ADVISORS = advisorsCfg.advisors || [];
+    return { templates, lines, verifications, advisors: ADVISORS };
   },
   listFields: async (id) => TEMPLATE_FIELDS[id] || null,
+  // disclosure PDFs are git-ignored (PII); present when running locally, absent on
+  // the public Pages site — returns null there and the disclosure is skipped.
+  getDisclosureBytes: async (advisorName) => {
+    const a = ADVISORS.find((x) => x.name === advisorName);
+    if (!a) return null;
+    try {
+      const r = await fetch('templates/disclosures/' + a.disclosure_file);
+      return r.ok ? new Uint8Array(await r.arrayBuffer()) : null;
+    } catch { return null; }
+  },
   getTemplateBytes: async (_id, tpl) => {
     try {
       const r = await fetch(tpl.file);
