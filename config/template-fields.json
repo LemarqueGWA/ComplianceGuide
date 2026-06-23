@@ -87,14 +87,6 @@
   ],
   "gwa_mandate": [
     {
-      "name": "on",
-      "type": "Tx"
-    },
-    {
-      "name": "on_2",
-      "type": "Tx"
-    },
-    {
       "name": "Signature2",
       "type": "Sig"
     },
