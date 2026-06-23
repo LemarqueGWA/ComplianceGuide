@@ -1,0 +1,17 @@
+{
+  "_note": "GWA advisers with a Letter of Introduction & Disclosure in SharePoint > GWA > Advisor compliance and processes > Compliance documents > Disclosures > <Advisor>. Used to attach the correct adviser's disclosure to a client pack. 'name' matches the CRM 'Advisor:' field.",
+  "disclosures_folder": "https://globalwa.sharepoint.com/Shared Documents/GWA/Advisor compliance and processes/Compliance documents/Disclosures",
+  "advisors": [
+    { "name": "Anton Kotzee", "disclosure_file": "Letter of Introduction and Disclosure - Anton Kotzee.pdf" },
+    { "name": "Candice Theron", "disclosure_file": "Letter of Introduction and Disclosure - Candice Theron.pdf" },
+    { "name": "Chantel J van Vuuren", "disclosure_file": "Letter of Introduction and Disclosure - Chantel J v Vuuren.pdf" },
+    { "name": "Jaco Raubenheimer", "disclosure_file": "Letter of Introduction and Disclosure - Jaco Raubenheimer.pdf" },
+    { "name": "Johan Lock", "disclosure_file": "Letter of Introduction and Disclosure - Johan Lock.pdf" },
+    { "name": "John Swart", "disclosure_file": "Letter of Introduction and Disclosure - John Swart.pdf" },
+    { "name": "JP Retief", "disclosure_file": "Letter of Introduction and Disclosure - JP Retief.pdf" },
+    { "name": "Karen Kruys", "disclosure_file": "Letter of Introduction and Disclosure - Karen Kruys.pdf" },
+    { "name": "Kobus Venter", "disclosure_file": "Letter of Introduction and Disclosure - Kobus Venter.pdf" },
+    { "name": "Lemarque Sadler", "disclosure_file": "Letter of Introduction and Disclosure - Lemarque Sadler.pdf" },
+    { "name": "Sean Phillips", "disclosure_file": "Letter of Introduction and Disclosure - Sean Phillips.pdf" }
+  ]
+}

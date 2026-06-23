@@ -628,13 +628,19 @@ export function initDashboard(opts) {
     }
   }
 
+  // Docs that are included in the .zip automatically even though they are "collect"
+  // in config: the disclosure is attached per-adviser, and the EaseFICA report +
+  // PEP screening come from the required verification uploads. Show them under
+  // "Auto-generated" in the success modal.
+  const AUTO_INCLUDED = new Set(['disclosure_letter', 'easefica_risk_rating', 'pep_screening']);
   function showSuccess(skipped) {
     const docs = activeDocs();
+    const isAuto = (d) => d.type === 'generate' || AUTO_INCLUDED.has(d.doc);
     $('okScenario').innerHTML = `<b>${state.scenario.name}</b>` +
       (skipped && skipped.length ? ` · <span style="color:#b46a00">skipped (no template): ${skipped.join(', ')}</span>` : '');
-    $('okGen').innerHTML = docs.filter((d) => d.type === 'generate')
+    $('okGen').innerHTML = docs.filter(isAuto)
       .map((d) => `<li>${DOC_LABELS[d.doc] || prettyLabel(d.doc)}</li>`).join('') || '<li>—</li>';
-    $('okCollect').innerHTML = docs.filter((d) => d.type === 'collect')
+    $('okCollect').innerHTML = docs.filter((d) => !isAuto(d))
       .map((d) => `<li>${DOC_LABELS[d.doc] || prettyLabel(d.doc)}${d.note ? ` <i style="color:#788693">(${d.note})</i>` : ''}</li>`).join('') || '<li>—</li>';
     $('overlay').classList.add('show');
   }
